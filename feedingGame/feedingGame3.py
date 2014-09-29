@@ -1,0 +1,302 @@
+import pygame, sys, os, random, math, time, copy, json, inspect
+from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN
+from gameIo import *
+from gameObjects import *
+from chordConversions import *
+from loadImage import *
+from gameState import *
+from display import *
+
+class FeedingGame:
+    #setup things that will be used later
+    def __init__(self, gameDisplayer, inputHandler, additionalArgs):
+        self.gameDisplayer = gameDisplayer
+        self.screen = self.gameDisplayer.screen
+        self.screenSize = (self.screen.get_width(), self.screen.get_height())
+        
+        self.inputHandler = inputHandler
+        self.resourcePath = os.path.dirname(inspect.getfile(self.__class__)) + '/resources'
+        self.additionalArgs = additionalArgs
+        
+        self.gameState = GameState()
+        self.gameState.state = self.gameState.INTRO_STATE
+
+        self.fDisplay = pygame.font.SysFont('Courier New', int(self.screenSize[1] / 30))
+        self.charLen = self.fDisplay.metrics("W")[0][4] #get the width of W since all letter widths are the same
+        self.charHeight = self.fDisplay.get_height()
+
+        self.fontColor = (0,0,255)
+
+    def intro(self):
+        #reset the vars
+        self.gameState.level = 0
+        self.gameState.money = 0
+        self.gameState.lives = 0
+
+        #load the images
+        self.powerImages = (load_image(self.resourcePath + '/money.bmp'),
+                            load_image(self.resourcePath + '/free.bmp'))
+
+        self.foodImages = (load_image(self.resourcePath+'/candy.bmp'),
+                           load_image(self.resourcePath+'/burger.bmp'))
+
+        peoplePath = self.resourcePath  + '/people'
+        peopleImages = load_images(peoplePath + '/p{}.bmp')
+        self.peopleImages = PeopleImages(None, peopleImages, None, load_image(peoplePath + "/eating.bmp"),
+                                         load_image(peoplePath + "/normal.bmp"))
+
+        selectionImage = load_image(self.resourcePath + "/characters/selector.bmp")
+        heroImages = load_images(self.resourcePath + "/characters/h{}.bmp")
+        self.heroAim = load_image(self.resourcePath + "/target.bmp")
+
+        self.congratsImages = load_images(self.resourcePath + "/distractions/c{}.bmp")
+        self.distractionImages = load_images(self.resourcePath + "/distractions/d{}.bmp")
+        self.speechImages = load_images(self.resourcePath + "/distractions/s{}.bmp")
+
+        self.tipsShower = allTipShower(4, self.screen)
+        personTipImg = load_image(self.resourcePath + "/tips/personTip.bmp")
+        tipsShower.add_tip(
+
+
+        #this controls the timing of the game
+        self.speedFactor = .004
+        self.loopTime = .05
+
+        #display the instructions file
+        instructFile = open(self.resourcePath + "/instructions.txt", 'r')
+        displayer = TextDisplay(instructFile.read(), self.screen, self.fDisplay, 0)
+        self.screen.fill((0, 0, 0))
+        displayer.draw()
+
+        self.gameDisplayer.display_game()
+
+        #make sure it's on the correct port
+        self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
+
+        #wait for the user to click
+        b = [False, False, False]
+        while not (b[1]):
+            self.inputHandler.event_handle()
+            j, b = self.inputHandler.get_input()
+            time.sleep(.01)
+
+        self.gameState.state = self.gameState.GAME_STATE
+
+        #use user_select to allow the user to select the hero image
+        selectheader = self.fDisplay.render("Select your character", 1, (255, 0, 0))
+        heroImageNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, heroImages, selectionImage)
+        self.heroImage = heroImages[heroImageNum]
+        
+        #setup the first level
+        self.increase_level()
+
+    def pause(self, displayAction):
+        self.screen.fill((0, 0, 0))
+        displayAction()
+        self.gameDisplayer.display_game()
+        
+        b = [False, False, False]
+        while not (b[0] or b[1] or b[2]):
+            self.inputHandler.event_handle()
+            j, b = self.inputHandler.get_input()
+            time.sleep(.01)
+
+    def main_game(self):
+        speedFactor = self.speedFactor
+
+        moneyFactor = 1
+
+        allFoodTypes = (FoodType("Candy", self.foodImages[0], .7, .34, moneyFactor*2, .05),
+                        FoodType("Burger", self.foodImages[1], 2, .51, moneyFactor*3, .07))
+
+        allPowerTypes = (PowerType(None, moneyFactor*15, 0, self.powerImages[0], ""),
+                         PowerType(None, 0, 10, self.powerImages[1], "FREE FOOD!"))
+
+        distractions = Distraction(self.screen, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
+        powerUpGroup = PowerUpGroup(self.screen, .02, speedFactor, allPowerTypes)
+        peopleGroup = PeopleGroup(self.screen, self.peopleImages, speedFactor)
+        peopleGroup.reset_people(self.numTotalPeople)
+        food = FoodGroup(self.screen, peopleGroup, allFoodTypes)
+        hero = Hero(self.screen, 10, food, powerUpGroup, speedFactor * 10, moneyFactor, self.heroImage, self.heroAim)
+        peopleGroup.stuffToDonate = powerUpGroup
+
+        hero.money = self.gameState.money
+        
+        loopTimer = LoopTimer(self.loopTime)
+
+        timeMeasure = MeasureTime(self.resourcePath +
+                                  "/time.csv", "background, draw, blitScreen, flip", False)
+
+        while(self.gameState.state == self.gameState.GAME_STATE):
+            loopTimer.start()
+
+            self.inputHandler.event_handle()
+
+            timeMeasure.start_clock()
+            self.screen.fill((100, 100, 100))
+
+            #for help using the mouse as the joystick
+            draw.circle(self.screen, (255,0,0), (int(self.screen.get_width()/2), int(self.screen.get_height()/2)), 10)
+
+            #moves the hero with the joystick
+            newJoystickPos, buttonsClicked = self.inputHandler.get_input()
+
+            hero.move(list(cart_to_polar(newJoystickPos)))
+
+            hero.get_powers()
+
+            #hero shoot or reload
+            if buttonsClicked[0]:
+                hero.shoot()
+            if buttonsClicked[1]:
+                food.next_food_type()
+            if buttonsClicked[2]:
+                self.pause(food.display_food_info)                
+
+            #moves the food
+            food.move_all()
+
+            self.turn(-peopleGroup.move_all(), peopleGroup)
+            
+            #draws and displays
+            distractions.turn_draw()
+            hero.draw()
+            peopleGroup.draw_all()
+            food.draw_all()
+            self.displayLives()
+            powerUpGroup.turn_display()
+
+            self.gameDisplayer.display_game()
+            timeMeasure.write_time()
+            
+            timeMeasure.write_end_loop()
+            
+            print("time left: ", loopTimer.get_remaining_time())
+            loopTimer.wait_till_end()
+
+        #save the money so it can be used next level
+        self.gameState.money = hero.money
+
+    #determines if the level is passed or the game is over and adds more people
+    def turn(self, lifeChangeAmount, peopleGroup):
+        if len(peopleGroup.allPeople) < self.maxTotalPeople:
+            if random.random() < self.personIncreaceRate:
+                peopleGroup.add_person()
+                self.numTotalPeople += 1
+        else:
+            #noting more will happen in the game if all the people are saved or dead, so move on
+            if len(peopleGroup.allPeople) == 0:
+                self.gameState.state = self.gameState.GAME_OVER_STATE
+
+            elif len(peopleGroup.allPeople) == len(peopleGroup.normalPeople):
+                self.gameState.state = self.gameState.LEVEL_OVER_STATE
+
+        if not lifeChangeAmount == 0:
+            self.gameState.lives += lifeChangeAmount
+            self.refresh_life_display()
+
+        if len(peopleGroup.normalPeople) >= self.levelEndAmount:
+            self.gameState.state = self.gameState.LEVEL_OVER_STATE
+
+        elif self.gameState.lives < 0:
+            self.gameState.state = self.gameState.GAME_OVER_STATE
+
+    def refresh_life_display(self):
+        self.tDisplay = self.fDisplay.render('Lives: ' + str(self.gameState.lives), 1, self.fontColor)
+        self.lifeDisplayRect = self.tDisplay.get_rect()
+        self.lifeDisplayRect.bottom = self.screenSize[1]
+        self.lifeDisplayRect.left = self.screenSize[0] / 2
+
+    def displayLives(self):
+        self.screen.blit(self.tDisplay, self.lifeDisplayRect)
+
+    #Increases the level by 1 and makes the nesesarry changes to the game
+    def increase_level(self):
+        self.gameState.level += 1
+        
+        #use the input function to set how the people appear
+        self.numTotalPeople, self.personIncreaceRate, self.maxTotalPeople = self.start_increase_max_game_calc(self.gameState.level)
+        self.levelEndAmount, addLives, addMoney = self.levelover_lives_money_calc(self.gameState.level,
+                                (self.numTotalPeople, self.personIncreaceRate, self.maxTotalPeople))
+        self.gameState.lives += addLives
+        self.gameState.money += addMoney
+        
+        self.personIncreaceRate *= self.speedFactor
+
+        self.refresh_life_display()
+
+    #calls increase level and displays the level change. Called by the game manager
+    def change_level(self):
+        self.increase_level()
+        
+        celibrator = Distraction(self.screen, self.speedFactor * 2, 1, self.distractionImages, self.congratsImages)
+
+        tDisplay = self.fDisplay.render("Congradulations, Prepare for level " + str(self.gameState.level + 1),
+                                            1, (0, 255, 0))
+        tDisplay2 = self.fDisplay.render("Press button 2 to continue" + str(self.gameState.level + 1),
+                                            1, (0, 255, 0))
+
+        buttons = (False, False, False)
+        while not buttons[1]:
+            self.inputHandler.event_handle()
+            j, buttons = self.inputHandler.get_input()
+            
+            self.screen.fill((200, 200, 200))
+            celibrator.turn_draw()
+            self.screen.blit(tDisplay, (0, self.screenSize[1]/2))
+            self.screen.blit(tDisplay2, (0, self.screenSize[1]/2 + 40))
+            self.gameDisplayer.display_game()
+
+            time.sleep(.04)
+            
+        self.gameState.state = self.gameState.GAME_STATE
+
+    
+    def start_increase_max_game_calc(self, levelNum):
+        startPeople = int(levelNum / 3) + 1
+        peopleIncrease = levelNum * 5
+        maxPeople = levelNum + 4
+
+        return startPeople, peopleIncrease, maxPeople
+        #return 30, 0, 31
+
+    def levelover_lives_money_calc(self, levelNum, startIncreaceMax):
+        startPeople, peopleIncrease, maxPeople = startIncreaceMax
+
+        if levelNum <= 1:
+            lives = 20
+        else:
+            lives = 5
+        
+        if levelNum <= 1:
+            money = 40
+        else:
+            money = 0
+            
+        levelOver = int(maxPeople * .75)
+        return levelOver, lives, money
+        #return 100, 200
+
+    #gives the score to be used in saving the high scores
+    def  get_score(self):
+        return self.gameState.level
+    
+
+    def game_over(self):
+        self.screen.fill((0, 0, 0))
+
+        tDisplay = self.fDisplay.render("Game over, button 2 to continue", 1, (255, 0, 0))
+
+        self.screen.blit(tDisplay, (0, self.screen.get_height()/2))
+        self.gameDisplayer.display_game()
+
+        click = False
+        while(not click):
+            self.inputHandler.event_handle()
+            j, buttons = self.inputHandler.get_input()
+            click = buttons[1]
+            
+        self.gameState.state = self.gameState.INTRO_STATE
+
+
+        

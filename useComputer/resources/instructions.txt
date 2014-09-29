@@ -1,0 +1,1 @@
+Thanks for using the monitor. You will be able to use it for 10 minutes, then the screen will switch back and remind you to save your work, and log off. It will continue ot do this every minute untill you have saved your work. Press the trigger to continue.
