@@ -81,12 +81,23 @@ class FeedingGame:
         selectheader = self.fDisplay.render("Select your character", 1, (255, 0, 0))
         heroImageNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, heroImages, selectionImage)
         self.heroImage = heroImages[heroImageNum]
+        self.allFoodTypes = (FoodType("Candy", self.foodImages[0], .7, .34, moneyFactor*2, .05),
+                        FoodType("Burger", self.foodImages[1], 2, .51, moneyFactor*3, .07))
 
         self.allTipShower = AllTipShower(1, self.screen)
         # tip to show when the first person appears on the screen
         personTipImg = load_image(self.resourcePath + "/tips/personTip.bmp")
         self.allTipShower.add_tip(None, (lambda obj: True), (lambda obj: obj.boundRect), personTipImg)
-        
+        # tip to show when the person gets hungry
+        hungryTipImg = load_image(self.resourcePath + "/tips/hungry.bmp")
+        self.allTipShower.add_tip(None, (lambda obj: True), (lambda obj: obj.boundRect), hungryTipImg)
+        # tip to show at the start of the level about the money
+        moneyTipImg = load_image(self.resourcePath + "/tips/money.bmp")
+        self.allTipShower.add_tip(None, (lambda obj: True), (lambda obj: Rect(obj.textStartPos, (1,1))), moneyTipImg)
+        # tip to show about switching food types
+        foodTypesTipImg = load_image(self.resourcePath + "/tips/foodTypes.bmp")
+        self.allTipShower.add_tip(None, (lambda hero: (self.gameState.level == 2) | (not hero.foodAddTo.currentFoodType == self.allFoodTypes[0])), (lambda hero: hero.boundRect), foodTypesTipImg)
+
         #setup the first level
         self.increase_level()
 
@@ -106,8 +117,6 @@ class FeedingGame:
 
         moneyFactor = 1
 
-        allFoodTypes = (FoodType("Candy", self.foodImages[0], .7, .34, moneyFactor*2, .05),
-                        FoodType("Burger", self.foodImages[1], 2, .51, moneyFactor*3, .07))
 
         allPowerTypes = (PowerType(None, moneyFactor*15, 0, self.powerImages[0], ""),
                          PowerType(None, 0, 10, self.powerImages[1], "FREE FOOD!"))
@@ -116,7 +125,7 @@ class FeedingGame:
         powerUpGroup = PowerUpGroup(self.screen, .02, speedFactor, allPowerTypes)
         peopleGroup = PeopleGroup(self.screen, self.peopleImages, speedFactor)
         peopleGroup.reset_people(self.numTotalPeople)
-        food = FoodGroup(self.screen, peopleGroup, allFoodTypes)
+        food = FoodGroup(self.screen, peopleGroup, self.allFoodTypes)
         hero = Hero(self.screen, 10, food, powerUpGroup, speedFactor * 10, moneyFactor, self.heroImage, self.heroAim)
         peopleGroup.stuffToDonate = powerUpGroup
 
@@ -126,8 +135,12 @@ class FeedingGame:
 
         timeMeasure = MeasureTime(self.resourcePath +
                                   "/time.csv", "background, draw, blitScreen, flip", False)
-
-        self.allTipShower.modify_tip(0, peopleGroup.allPeople) 
+        
+        # update the tips to the new groups
+        self.allTipShower.modify_tip(0, peopleGroup.allPeople)
+        self.allTipShower.modify_tip(1, peopleGroup.hungryPeople)
+        self.allTipShower.modify_tip(2, [hero])
+        self.allTipShower.modify_tip(3, [hero])
 
         while(self.gameState.state == self.gameState.GAME_STATE):
             loopTimer.start()
