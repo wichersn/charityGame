@@ -700,6 +700,7 @@ class TipShower:
         objRect = self.getRect(obj)
         imgRect = self.tipImg.get_rect()
         imgRect.bottom = objRect.top
+        imgRect.left = objRect.left
         
         self.screen.blit(self.tipImg, imgRect)
 
@@ -707,7 +708,7 @@ class TipShower:
     def show_tip_first(self):
         first = self.firstGetter.get_first()
         if not first == None:
-            self.showTip(first)
+            self.show_tip(first)
 
         return not first == None
 
@@ -718,16 +719,23 @@ class AllTipShower:
         self.tips = []
         self.showTime = showTime
 
+    # getRect(object) gives the bounding rectangle of the object
     def add_tip(self, objects, is_tip, getRect, tipImg):
         newTip = TipShower(objects, is_tip, getRect, tipImg, self.screen)
         newTip.time = 0
-        tipShower.preShow = False
+        newTip.preShow = False
+        self.tips.append(newTip)
 
+    def modify_tip(self, tipNum, objects):
+        self.tips[tipNum].firstGetter.lst = objects
+
+    #shows all the tips that should be shown
     def show_tips(self):
         canShow = False
         for tipShower in self.tips:
-            if tipShower.time < showTime:
+            if tipShower.time < self.showTime:
                 canShow = True
+                print("can show")
                 showed = tipShower.show_tip_first()
                 # set the clock
                 if showed and (not tipShower.preShow):

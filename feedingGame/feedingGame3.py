@@ -26,7 +26,7 @@ class FeedingGame:
         self.charHeight = self.fDisplay.get_height()
 
         self.fontColor = (0,0,255)
-
+        
     def intro(self):
         #reset the vars
         self.gameState.level = 0
@@ -52,11 +52,6 @@ class FeedingGame:
         self.congratsImages = load_images(self.resourcePath + "/distractions/c{}.bmp")
         self.distractionImages = load_images(self.resourcePath + "/distractions/d{}.bmp")
         self.speechImages = load_images(self.resourcePath + "/distractions/s{}.bmp")
-
-        self.tipsShower = allTipShower(4, self.screen)
-        personTipImg = load_image(self.resourcePath + "/tips/personTip.bmp")
-        tipsShower.add_tip(
-
 
         #this controls the timing of the game
         self.speedFactor = .004
@@ -86,6 +81,11 @@ class FeedingGame:
         selectheader = self.fDisplay.render("Select your character", 1, (255, 0, 0))
         heroImageNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, heroImages, selectionImage)
         self.heroImage = heroImages[heroImageNum]
+
+        self.allTipShower = AllTipShower(1, self.screen)
+        # tip to show when the first person appears on the screen
+        personTipImg = load_image(self.resourcePath + "/tips/personTip.bmp")
+        self.allTipShower.add_tip(None, (lambda obj: True), (lambda obj: obj.boundRect), personTipImg)
         
         #setup the first level
         self.increase_level()
@@ -127,6 +127,8 @@ class FeedingGame:
         timeMeasure = MeasureTime(self.resourcePath +
                                   "/time.csv", "background, draw, blitScreen, flip", False)
 
+        self.allTipShower.modify_tip(0, peopleGroup.allPeople) 
+
         while(self.gameState.state == self.gameState.GAME_STATE):
             loopTimer.start()
 
@@ -164,6 +166,7 @@ class FeedingGame:
             peopleGroup.draw_all()
             food.draw_all()
             self.displayLives()
+            self.allTipShower.show_tips()
             powerUpGroup.turn_display()
 
             self.gameDisplayer.display_game()
@@ -171,7 +174,6 @@ class FeedingGame:
             
             timeMeasure.write_end_loop()
             
-            print("time left: ", loopTimer.get_remaining_time())
             loopTimer.wait_till_end()
 
         #save the money so it can be used next level
@@ -297,6 +299,3 @@ class FeedingGame:
             click = buttons[1]
             
         self.gameState.state = self.gameState.INTRO_STATE
-
-
-        

@@ -62,7 +62,7 @@ class GameManager:
         promoRect.height = textStart
         promoVideo.set_display(self.totalScreen, promoRect)
 
-        gameCoinCost = 5
+        gameCoinCost = 0 #5 TODO: Change BACK!!
         coinToCents = 5
 
         #display insert coin
@@ -316,7 +316,8 @@ from useComputer.useComputer import UseComputer
 from feedingGame.feedingGame3 import FeedingGame
 
 while True:
-    gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 750), .1)
+    #gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 750), .1)
+    gameManager = GameManager([(FeedingGame, (""))], (1100, 750), .1)
     #gameManager = GameManager([(UseComputer, (""))], (400, 400), .1)
 
     gameManager.pay_select_game()
