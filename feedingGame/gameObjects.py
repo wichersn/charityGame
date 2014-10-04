@@ -630,6 +630,10 @@ class Distraction:
 
         self.set_speech()
 
+    #returns true if the image is visible on the screen
+    def is_displayed(self):
+        return self.displayPos[0] < self.screenSize[0]
+
     def scale_images(self, originalImages, screenAve):
         newImages = []
         for image in originalImages:
@@ -640,7 +644,7 @@ class Distraction:
         return newImages
 
     def turn_draw(self):
-        if self.displayPos[0] >= self.screenSize[0]:
+        if not self.is_displayed():
             if random.random() < self.displayProb:
                 #reset the displayPos to display again
                 self.displayPos = [0, random.random() * self.screenSize[1]]
@@ -694,6 +698,7 @@ class TipShower:
         self.tipImg = tipImg
         self.screen = screen
         self.getRect = getRect
+        self.loopStart = 0
 
     # displays the tip next to the specified object
     def show_tip(self, obj):
@@ -716,32 +721,29 @@ class TipShower:
 class AllTipShower:
     def __init__(self, showTime, screen):
         self.screen = screen
-        self.tips = []
+        self.tips = {}
         self.showTime = showTime
 
     # getRect(object) gives the bounding rectangle of the object
-    def add_tip(self, objects, is_tip, getRect, tipImg):
+    # the name should be unique
+    def add_tip(self, name, objects, is_tip, getRect, tipImg):
         newTip = TipShower(objects, is_tip, getRect, tipImg, self.screen)
         newTip.time = 0
         newTip.preShow = False
-        self.tips.append(newTip)
+        self.tips[name] = newTip
 
-    def modify_tip(self, tipNum, objects):
-        self.tips[tipNum].firstGetter.lst = objects
+    def modify_tip(self, name, objects):
+        self.tips[name].firstGetter.lst = objects
 
     #shows all the tips that should be shown
     def show_tips(self):
         canShow = False
-        for tipShower in self.tips:
+        for tipShower in self.tips.values():
             if tipShower.time < self.showTime:
                 canShow = True
-                print("can show")
                 showed = tipShower.show_tip_first()
                 # set the clock
-                if showed and (not tipShower.preShow):
-                    tipShower.startTime = time.clock()
-                if (not showed) and tipShower.preShow:
-                    tipShower.time += time.clock() - tipShower.startTime
-
+                tipShower.time += time.clock() - tipShower.loopStart
+                tipShower.loopStart = time.clock()
 
 
