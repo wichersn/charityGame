@@ -5,6 +5,7 @@ __pycache__/
 #vim stuff
 *.save
 *~
+*.swp
 
 # C extensions
 *.so

@@ -92,6 +92,9 @@ class FeedingGame:
         # tip to show when the person gets hungry
         hungryTipImg = load_image(self.resourcePath + "/tips/hungry.bmp")
         self.allTipShower.add_tip("hungry", None, (lambda person: person.health < .2), (lambda obj: obj.boundRect), hungryTipImg)
+        # tip to show when the person is fully fed
+        fullyFedTipImg = load_image(self.resourcePath + "/tips/fullyFed.bmp")
+        self.allTipShower.add_tip("full", None, (lambda obj: True), (lambda obj: obj.boundRect), fullyFedTipImg)
         # tip to show at the start of the level about the money
         moneyTipImg = load_image(self.resourcePath + "/tips/money.bmp")
         self.allTipShower.add_tip("money", None, (lambda obj: True), (lambda obj: Rect(obj.textStartPos, (1,1))), moneyTipImg)
@@ -102,7 +105,6 @@ class FeedingGame:
             return level or switch
         foodTypesTipImg = load_image(self.resourcePath + "/tips/foodTypes.bmp")
         self.allTipShower.add_tip("food", None, showTypeTip, (lambda hero: hero.boundRect), foodTypesTipImg)
-        # TODO: powerup tip
 
         # Display a tip about the lives
         # We don't actually use the objects in this one
@@ -118,6 +120,14 @@ class FeedingGame:
         #tip to show when the distraction is displayed
         distractTipImg = load_image(self.resourcePath + "/tips/distract.bmp")
         self.allTipShower.add_tip("distract", None, (lambda distract: distract.is_displayed()), (lambda distract: Rect(distract.displayPos,(1,1))), distractTipImg)
+
+        # tip to show when the power up appears
+        powerTipImg = load_image(self.resourcePath + "/tips/power.bmp")
+        self.allTipShower.add_tip("power", None, (lambda obj: True), (lambda powerUp: powerUp.boundRect), powerTipImg)
+        # tip to show when the power up is collected
+        hasPowerTipImg = load_image(self.resourcePath + "/tips/hasPower.bmp")
+        self.allTipShower.add_tip("hasPower", None, (lambda hero: hero.powerUp.type != PowerType.noneType), (lambda hero: Rect((hero.tPowerX, hero.textTop),(1,1))), hasPowerTipImg)
+
 
         #setup the first level
         self.increase_level()
@@ -158,10 +168,13 @@ class FeedingGame:
         # update the tips to the new groups
         self.allTipShower.modify_tip("person", peopleGroup.allPeople)
         self.allTipShower.modify_tip("hungry", peopleGroup.hungryPeople)
+        self.allTipShower.modify_tip("full", peopleGroup.normalPeople)
         self.allTipShower.modify_tip("money", [hero])
         self.allTipShower.modify_tip("food", [hero])
         self.allTipShower.modify_tip("lives", [None])
         self.allTipShower.modify_tip("distract", [distractions])
+        self.allTipShower.modify_tip("power", powerUpGroup.allPowerUps)
+        self.allTipShower.modify_tip("hasPower", [hero])
 
         while(self.gameState.state == self.gameState.GAME_STATE):
             loopTimer.start()
