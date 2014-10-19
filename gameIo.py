@@ -1,4 +1,5 @@
 import pygame, sys, os, random, math, time, copy, json, threading
+from chordConversions import *
 from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN, KEYDOWN, K_ESCAPE
 
 try:
@@ -143,6 +144,8 @@ class InputHandler:
             
         self.screenSize = screenSize
         self.halfScreenSize = (screenSize[0]/2.0, screenSize[1]/2.0)
+        
+        self.prePolar = 0
 
         #set up the gpio pins
         try:
@@ -162,7 +165,6 @@ class InputHandler:
                     #GPIO.add_event_detect(pinNumber, GPIO.RISING)
                     
         self.prePressed = [True, True, True]
-        #for debug, remove !!!!!!!!!!!
         #self.joystick = None
 
         #hdmi switch stuff
@@ -193,8 +195,10 @@ class InputHandler:
             if event.type is KEYDOWN and event.key == K_ESCAPE:
                 close()
 
-    #uses the mouse to act as the joystick
-    def get_input(self):
+    #Returns the joystick position and the buttons pressed
+    #uses the mouse to act as the joystick if the joystick isn't there
+    # If polar is true gives the joystick in polar form
+    def get_input(self, polar = False):
         #read joystick or mouse position
         if self.joystick:
             #actually read joystick
@@ -222,6 +226,13 @@ class InputHandler:
                 pressed[2] = pygame.key.get_pressed()[pygame.K_SPACE]
 
         triggered = self.get_triggered(pressed)
+
+        if polar:
+          joyPos = list(cart_to_polar(joyPos))
+          #if the joystick is centered, use the angle from the last time
+          if joyPos[0] == 0:
+            joyPos[1] = self.prePolar
+          prePolarPos = joyPos
             
         return joyPos, triggered
 

@@ -2,7 +2,6 @@ import pygame, sys, os, random, math, time, copy, json, inspect
 from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN
 from gameIo import *
 from gameObjects import *
-from chordConversions import *
 from loadImage import *
 from gameState import *
 from display import *
@@ -188,9 +187,8 @@ class FeedingGame:
             draw.circle(self.screen, (255,0,0), (int(self.screen.get_width()/2), int(self.screen.get_height()/2)), 10)
 
             #moves the hero with the joystick
-            newJoystickPos, buttonsClicked = self.inputHandler.get_input()
-
-            hero.move(list(cart_to_polar(newJoystickPos)))
+            newJoystickPos, buttonsClicked = self.inputHandler.get_input(True)
+            hero.move(newJoystickPos)
 
             hero.get_powers()
 

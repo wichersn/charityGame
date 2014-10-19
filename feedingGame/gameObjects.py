@@ -26,7 +26,8 @@ class Hero:
         self.screen = screen
         self.color = (0, 100, 100)
 
-        self.deadZone = .1
+        self.deadZone = .2
+        self.moveSpeed = 350
 
         self.fDisplay = pygame.font.SysFont('Courier New', int(self.screenSize[0]/40))
         self.fontColor = (255,0,0)
@@ -50,10 +51,11 @@ class Hero:
         
         self.direction = moveChords[1]
 
-        if moveChords[0] < self.deadZone:
+        moveChords[0] -= self.deadZone
+        if moveChords[0] < 0:
             moveChords[0] = 0
 
-        moveChords[0] *= self.speedFactor *300
+        moveChords[0] *= self.speedFactor * self.moveSpeed
         
         moveCartChords = list(polar_to_cart(moveChords))
 
