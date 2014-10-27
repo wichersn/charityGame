@@ -136,7 +136,7 @@ class MeasureTime:
 #set pinNums to none to use joystick mouse            
 class InputHandler:
     def __init__(self, pinNums, coinPinNum, joystickNum, hdmiOutPin, hdmiInPin1, hdmiInPin2, screenSize = (0,0)):
-        if pygame.joystick.get_count() > 0:
+        if (not joystickNum == None) and pygame.joystick.get_count() > 0:
             self.joystick = pygame.joystick.Joystick(joystickNum)
             self.joystick.init()
         else:
@@ -168,7 +168,7 @@ class InputHandler:
         #self.joystick = None
 
         #hdmi switch stuff
-        self.hdmiWaitTime = .3
+        self.hdmiWaitTime = 1
         self.hdmiDebTime = 200
 
         self.hdmiOutPin = hdmiOutPin
@@ -307,6 +307,7 @@ class InputHandler:
 
         while not self.detectPinCounts == pinCountCondition and switchCount <= self.switchLimit:
             self.detectPinCounts = [0,0]
+	    print('trigger')
             GPIO.output(self.hdmiOutPin,True) ## This triggers the switch
             time.sleep(self.hdmiWaitTime)
             GPIO.output(self.hdmiOutPin, False)     

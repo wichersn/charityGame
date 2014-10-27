@@ -11,6 +11,16 @@ from display import *
 #It has __init__ inputs of screen, inputHandeler, resourcePath
 class GameManager:
     def __init__(self, allGameInfos, screenSize, scoreScreenRatio):
+	#The GPIO pins used on the raspberry pi for input and output
+	coinPin = 21
+	hdmiOutPin = 10
+	hdmiInPin1 = 8
+	hdmiInPin2 = 12
+
+	#The hdmi ports the devices are on
+        piPort = 1
+        compPort = 2
+
         #initialises the screen and display
         self.allGameInfos = allGameInfos
 
@@ -45,10 +55,10 @@ class GameManager:
         self.charHeight = self.fDisplay.get_height()
 
         #initialise input
-        self.inputHandler = InputHandler(None, 21, 0, 22,26,24, (self.screen.get_width(), self.screen.get_height()))
+        self.inputHandler = InputHandler(None, coinPin, 0, hdmiOutPin, hdmiInPin1, hdmiInPin2, (self.screen.get_width(), self.screen.get_height()))
 
-        self.inputHandler.piPort = 1
-        self.inputHandler.compPort = 2
+        self.inputHandler.piPort = piPort
+        self.inputHandler.compPort = compPort
 
         self.inputHandler.switch_to_port(self.inputHandler.piPort)
 
@@ -62,7 +72,7 @@ class GameManager:
         promoRect.height = textStart
         promoVideo.set_display(self.totalScreen, promoRect)
 
-        gameCoinCost = 0 #5 TODO: Change BACK!!
+        gameCoinCost = 5 
         coinToCents = 5
 
         #display insert coin
@@ -316,8 +326,8 @@ from useComputer.useComputer import UseComputer
 from feedingGame.feedingGame3 import FeedingGame
 
 while True:
-    #gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 750), .1)
-    gameManager = GameManager([(FeedingGame, (""))], (1100, 750), .1)
+    gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .1)
+    #gameManager = GameManager([(FeedingGame, (""))], (1100, 750), .1)
     #gameManager = GameManager([(UseComputer, (""))], (400, 400), .1)
 
     gameManager.pay_select_game()
