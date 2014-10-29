@@ -7,16 +7,16 @@ def rising(num):
 def falling(num):
     print("falling on: " + str(num))
 
-inPin1 = 8
+inPin1 = 8 
 inPin2 = 12
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(inPin1, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 GPIO.setup(inPin2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
-GPIO.add_event_detect(inPin1, GPIO.FALLING, falling, 200)
+#GPIO.add_event_detect(inPin1, GPIO.FALLING, falling, 200)
 
-GPIO.add_event_detect(inPin2, GPIO.FALLING, falling, 200)
+#GPIO.add_event_detect(inPin2, GPIO.FALLING, falling, 200)
 
 #GPIO.add_event_detect(inPin1, GPIO.RISING, callback= rising) *
 

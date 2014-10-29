@@ -168,7 +168,7 @@ class InputHandler:
         #self.joystick = None
 
         #hdmi switch stuff
-        self.hdmiWaitTime = 1
+        self.hdmiWaitTime = .3
         self.hdmiDebTime = 200
 
         self.hdmiOutPin = hdmiOutPin
@@ -279,49 +279,40 @@ class InputHandler:
 
             print("pin count condition:", pinCountCondition)
 
-            switchingThread = threading.Thread(target = self.keep_switching, args =(pinCountCondition)) 
-            switchingThread.start()
+            if portNum == 1:
+                #stop switching when it goes from port 2 to 1. 
+                GPIO.add_event_detect(self.hdmiInPin1, GPIO.FALLING, callback= self.stop_switching)
+            elif portNum == 2:
+                #stop switching when it goes to port 2. 
+                GPIO.add_event_detect(self.hdmiInPin1, GPIO.RISING, callback= self.stop_switching)
+            else:
+                #stop switching when it goes to port 3. 
+                GPIO.add_event_detect(self.hdmiInPin2, GPIO.RISING, callback= self.stop_switching)
 
-            GPIO.add_event_detect(self.hdmiInPin1, GPIO.RISING, callback= self.event_detected, 
-                                      bouncetime = self.hdmiDebTime)
+	    self.keep_switching()
 
-            GPIO.add_event_detect(self.hdmiInPin2, GPIO.FALLING, callback= self.event_detected, 
-                                      bouncetime = self.hdmiDebTime)
 
-    #the event that's trigered when the pin status changes. It records this
-    def event_detected(self, pin):
-        print("event:", pin)
-        self.detectPinCounts[pin == self.hdmiInPin1] += 1
-
-    #switches as long as the pinCountCondition is not met in the detectPinCounts
-    def keep_switching(self, pinCountCond1, pinCountCond2):
-        pinCountCondition = [pinCountCond1, pinCountCond2]
-        print("actuall pin count condition:", pinCountCondition)
-        self.detectPinCounts = None
-
-        if not self.hasGpio:
-            return
+    #continuously swithces as long as self.keepSwitching is true
+    def keep_switching(self):
         self.keepSwitching  = True
         
-        switchCount = 0
-
-        while not self.detectPinCounts == pinCountCondition and switchCount <= self.switchLimit:
-            self.detectPinCounts = [0,0]
-	    print('trigger')
+        while self.keepSwitching :
             GPIO.output(self.hdmiOutPin,True) ## This triggers the switch
             time.sleep(self.hdmiWaitTime)
-            GPIO.output(self.hdmiOutPin, False)     
+            GPIO.output(self.hdmiOutPin, False)	
             time.sleep(self.hdmiWaitTime)
-            switchCount += 1
-            print("pin counts:", self.detectPinCounts)
+
+    #disables keep switching
+    def stop_switching(self, e):
+        self.keepSwitching = False
 
     #returns the current port
     def get_pi_port(self):
         actuallPinValue = [GPIO.input(self.hdmiInPin1), GPIO.input(self.hdmiInPin2)]
-        allPinCountConditons = [[1,1], [1,2], [0,0]]
+        allPinCountConditons = [[0,0], [1,0], [0,1]]
         for portNum in range(len(self.allPinValues)):
             if self.allPinValues[portNum] == actuallPinValue:
-                return portNum
+                return portNum + 1
 
 
     #only swithces to the port if we're not alread there
