@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 waitTime = 2
-outPin = 22
+outPin = 24
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(outPin, GPIO.OUT, pull_up_down = GPIO.PUD_DOWN)
 

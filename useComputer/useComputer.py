@@ -25,10 +25,6 @@ class UseComputer:
 
         self.fontColor = (0,0,255)
 
-#        self.computerPort = 2
- #       self.piPort = 1
-        #self.hdmiSwitcher = HdmiSwitcher(3,5,7)
-        
     def intro(self):
         instructFile = open(self.resourcePath + "/instructions.txt", 'r')
         displayer = TextDisplay(instructFile.read(), self.screen, self.fDisplay, 0)
