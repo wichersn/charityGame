@@ -1,0 +1,5 @@
+Hero (characters folder): The character that the user plays and feeds people. I would like to have different hero images for the user to chose to play (h1, h2, h3 ...).
+
+People (people folder): The people that are getting fed. Different images for the people depending on how hungry they are. Ranging from okay to about to die (p1, p2, p3). Also a different image for when the person is fully fed and doesn't need to be fed anymore (normal). Also a image for when the person is eating food. 
+
+

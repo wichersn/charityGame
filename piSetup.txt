@@ -1,0 +1,10 @@
+Use rasberian os
+
+sudo apt-get update
+sudo apt-get upgrade
+
+preinstalled: vim, python, pygame
+
+install vim 
+
+for file sharing: http://www.maketecheasier.com/turn-raspberry-pi-into-file-server/
