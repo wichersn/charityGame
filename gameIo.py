@@ -150,6 +150,7 @@ class InputHandler:
         #set up the gpio pins
         try:
             GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(coinPinNum, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
             self.hasGpio = True
         except:
             self.hasGpio = False
@@ -158,7 +159,6 @@ class InputHandler:
             self.coinPinNum = coinPinNum          
             self.pinNums = pinNums
 
-            GPIO.setup(coinPinNum, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
             if pinNums:
                 for pinNumber in self.pinNums:
                     GPIO.setup(pinNumber, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
