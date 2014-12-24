@@ -5,6 +5,9 @@ sudo apt-get upgrade
 
 preinstalled: vim, python, pygame
 
-install vim 
+install vim
+#install vim 7.4:
+#http://linuxg.net/how-to-install-vim-7-4-on-ubuntu-13-10-13-04-12-04-linux-mint-16-15-13-and-debian-sid/
+#The add-apt-repository ppa:fcwu-tw/ppa command requires sudo apt-get install python-software-properties
 
 for file sharing: http://www.maketecheasier.com/turn-raspberry-pi-into-file-server/

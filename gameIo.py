@@ -188,12 +188,30 @@ class InputHandler:
 
         self.switchLimit = 3
 
+        #Values for shutdown combination
+        #Give the operator a way to shutdown the raspberry pi correctly with the joystick
+        self.btnCombo = [(True,9),(False,9),(True,5),(False,5),(True,7),(True,10),(False,10),(False,7)]
+        self.btnComboI = 0
+
     def event_handle(self):
         for event in pygame.event.get():
             if event.type == QUIT:
                 close()
             if event.type is KEYDOWN and event.key == K_ESCAPE:
                 close()
+            if event.type == pygame.JOYBUTTONUP or event.type == pygame.JOYBUTTONDOWN:
+                btnEventInfo = (event.type == pygame.JOYBUTTONDOWN, event.button)
+                if self.btnCombo[self.btnComboI] == btnEventInfo:
+                    self.btnComboI += 1
+                else:
+                    self.btnComboI = 0
+
+                print("btnCombo", btnEventInfo, self.btnComboI)
+
+                if self.btnComboI >= len(self.btnCombo):
+                  self.btnComboI = 0
+                  close()
+                  #os.system("shutdown now -h")
 
     #Returns the joystick position and the buttons pressed
     #uses the mouse to act as the joystick if the joystick isn't there
@@ -289,7 +307,7 @@ class InputHandler:
                 #stop switching when it goes to port 3. 
                 GPIO.add_event_detect(self.hdmiInPin2, GPIO.RISING, callback= self.stop_switching)
 
-	    self.keep_switching()
+        self.keep_switching()
 
 
     #continuously swithces as long as self.keepSwitching is true
@@ -299,7 +317,7 @@ class InputHandler:
         while self.keepSwitching :
             GPIO.output(self.hdmiOutPin,True) ## This triggers the switch
             time.sleep(self.hdmiWaitTime)
-            GPIO.output(self.hdmiOutPin, False)	
+            GPIO.output(self.hdmiOutPin, False) 
             time.sleep(self.hdmiWaitTime)
 
     #disables keep switching
