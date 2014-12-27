@@ -73,6 +73,9 @@ class GameManager:
         promoVideo.set_display(self.totalScreen, promoRect)
 
         gameCoinCost = 5 
+        if sys.flags.debug:
+          gameCoinCost  = 0
+
         coinToCents = 5
 
         #display insert coin
@@ -99,7 +102,7 @@ class GameManager:
             accepted = self.inputHandler.coinCount >= gameCoinCost
 
             if preCoinCount < self.inputHandler.coinCount:
-                promoVideo.stop()
+                promoVideo.stop(self.update_score_display())
 
                 tCoinsLeft = self.fDisplay.render("Please insert {} more cents.".format((gameCoinCost - self.inputHandler.coinCount)*coinToCents), 1, (0, 255, 0))
                 
@@ -132,6 +135,8 @@ class GameManager:
         scorePath = self.gameResourcesPaths[gameNum] + self.highScoresPath
         self.scoreSaver = HighScoreSaver(scorePath, 5)
         
+        self.update_score_display()
+
         self.game = self.allGameInfos[gameNum][0](self.gameDisplayer, self.inputHandler, self.allGameInfos[gameNum][1])
 
         #state machine
@@ -280,7 +285,7 @@ class GameManager:
                 self.screen.blit(numberText, (0, scoreYPos))
                 
                 self.screen.blit(keypadImg, keypadRect)
-                    
+                
                 self.gameDisplayer.display_game()
 
                 #exit if timed out
@@ -326,7 +331,7 @@ from useComputer.useComputer import UseComputer
 from feedingGame.feedingGame3 import FeedingGame
 
 while True:
-    gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .1)
+    gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .2)
     #gameManager = GameManager([(FeedingGame, (""))], (1100, 750), .1)
     #gameManager = GameManager([(UseComputer, (""))], (400, 400), .1)
 

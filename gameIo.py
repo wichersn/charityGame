@@ -206,8 +206,6 @@ class InputHandler:
                 else:
                     self.btnComboI = 0
 
-                print("btnCombo", btnEventInfo, self.btnComboI)
-
                 if self.btnComboI >= len(self.btnCombo):
                   self.btnComboI = 0
                   close()
@@ -250,7 +248,7 @@ class InputHandler:
           #if the joystick is centered, use the angle from the last time
           if joyPos[0] == 0:
             joyPos[1] = self.prePolar
-          prePolarPos = joyPos
+          self.prePolar = joyPos[1]
             
         return joyPos, triggered
 
@@ -294,8 +292,6 @@ class InputHandler:
         if portNum >= 1 and portNum <= 3:
             #the appropriate stoping condition depending on the port num
             pinCountCondition = self.allPinCountConditons[portNum-1]
-
-            print("pin count condition:", pinCountCondition)
 
             if portNum == 1:
                 #stop switching when it goes from port 2 to 1. 

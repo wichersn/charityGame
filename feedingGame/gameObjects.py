@@ -14,7 +14,7 @@ class Hero:
         self.boundRect.center = self.wantedPos
 
         #the money to buy food
-        self.incomePerTurn = moneyFactor * speedFactor * .7
+        self.incomePerTurn = moneyFactor * speedFactor * 1
         
         self.powersToGet = powersToGet
         self.powerUp = PowerType(PowerType.noneType, None, 0, None, "")
@@ -26,7 +26,7 @@ class Hero:
         self.screen = screen
         self.color = (0, 100, 100)
 
-        self.deadZone = .2
+        self.deadZone = .5
         self.moveSpeed = 350
 
         self.fDisplay = pygame.font.SysFont('Courier New', int(self.screenSize[0]/40))
@@ -224,7 +224,7 @@ class Person:
             if self.lastDonationTime >= self.donationWait:
                 self.lastDonationTime = 0.0
 
-                donationType = 1#random.randint(0, numPowerUps - 1)
+                donationType = random.randint(0, numPowerUps - 1)
                 return self.boundRect.center, donationType
                 
             else:

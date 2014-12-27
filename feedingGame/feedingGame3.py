@@ -146,8 +146,8 @@ class FeedingGame:
         speedFactor = self.speedFactor
 
 
-        allPowerTypes = (PowerType(None, self.moneyFactor*15, 0, self.powerImages[0], ""),
-                         PowerType(None, 0, 10, self.powerImages[1], "FREE FOOD!"))
+        allPowerTypes = (PowerType(None, self.moneyFactor*30, 0, self.powerImages[0], ""),
+                         PowerType(None, 0, 20, self.powerImages[1], "FREE FOOD!"))
 
         distractions = Distraction(self.screen, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
         powerUpGroup = PowerUpGroup(self.screen, .02, speedFactor, allPowerTypes)
@@ -323,7 +323,6 @@ class FeedingGame:
             
         levelOver = int(maxPeople * .75)
         return levelOver, lives, money
-        #return 100, 200
 
     #gives the score to be used in saving the high scores
     def  get_score(self):
