@@ -69,9 +69,6 @@ def user_select(header, gameDisplayer, inputHandler, images, selectionImage):
         if abs(cartJoyPos[0]) > .1:
             selectionPos += cartJoyPos[0] * selectionMoveScale
 
-
-        print(selectionPos)
-
         if selectionPos <= 0:
             selectionPos = len(imageInfos) - .1
         elif selectionPos >= len(imageInfos):

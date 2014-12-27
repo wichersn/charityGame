@@ -11,13 +11,13 @@ from display import *
 #It has __init__ inputs of screen, inputHandeler, resourcePath
 class GameManager:
     def __init__(self, allGameInfos, screenSize, scoreScreenRatio):
-	#The GPIO pins used on the raspberry pi for input and output
-	coinPin = 21
-	hdmiOutPin = 10
-	hdmiInPin1 = 8
-	hdmiInPin2 = 12
+        #The GPIO pins used on the raspberry pi for input and output
+        coinPin = 21
+        hdmiOutPin = 10
+        hdmiInPin1 = 8
+        hdmiInPin2 = 12
 
-	#The hdmi ports the devices are on
+	      #The hdmi ports the devices are on
         piPort = 1
         compPort = 2
 
@@ -38,10 +38,7 @@ class GameManager:
 
         #set path
         #self.resourcePath = os.path.dirname(os.path.abspath(sys.executable)) + "/resources"
-        print(sys.modules[self.__module__].__file__)
-        print ("solution", os.path.dirname(os.path.realpath(__file__)))
         self.resourcePath = os.path.dirname(os.path.realpath(sys.modules[self.__module__].__file__)) + '/resources'
-        print('path: ', self.resourcePath)
         self.gameResourcesPaths = [os.path.dirname(os.path.realpath(inspect.getfile(gameInfo[0]))) + '/resources' for gameInfo in self.allGameInfos]
         self.highScoresPath = '/highScores.txt'
         self.gameImagePath = '/gameImage.bmp'
@@ -65,16 +62,20 @@ class GameManager:
         self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen)
 
     def pay_select_game(self):
+        #print("pay select start")
         textStart = self.screenSize[1] - self.charHeight*2
         #setup movie intro
+        #print("before movie made")
+        pygame.mixer.quit()
         promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg')
+        #print("movie made")
         promoRect = self.screen.get_rect()
         promoRect.height = textStart
         promoVideo.set_display(self.totalScreen, promoRect)
 
+        #print("movie set")
+
         gameCoinCost = 5 
-        if sys.flags.debug:
-          gameCoinCost  = 0
 
         coinToCents = 5
 
@@ -102,7 +103,7 @@ class GameManager:
             accepted = self.inputHandler.coinCount >= gameCoinCost
 
             if preCoinCount < self.inputHandler.coinCount:
-                promoVideo.stop(self.update_score_display())
+                promoVideo.stop()
 
                 tCoinsLeft = self.fDisplay.render("Please insert {} more cents.".format((gameCoinCost - self.inputHandler.coinCount)*coinToCents), 1, (0, 255, 0))
                 
@@ -150,7 +151,7 @@ class GameManager:
             if(self.game.gameState.state == self.game.gameState.GAME_OVER_STATE):
                 #runs this classes game_over function.
                 self.game_over()
-		break
+                break
 
 
     def main_game(self):
@@ -167,6 +168,7 @@ class GameManager:
 
     def game_over(self):
         scoreData = ["", self.game.get_score()]
+        #print("-------- start Score stuff---------")
         #make if a game doesn't have high scores, it returns None
         if scoreData[1]:
             if self.scoreSaver.is_high_score(scoreData):
@@ -175,10 +177,13 @@ class GameManager:
                     self.scoreSaver.add_score(scoreData)
                 self.update_score_display()
             
+        #print("_------ end score___")
         self.game.game_over()
 
         #make sure it's swithced to the correct port after the game
         self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
+
+        #print("-------end switch port-------")
 
 #        cleanupGpio()
 
@@ -231,8 +236,6 @@ class GameManager:
         while not done:
 
             self.screen.fill((0, 0, 0))
-##            for displayInfo in displayInfos:
-##                self.screen.blit(displayInfo[0], (0,displayInfo[1]))
 
             displayer.draw()
 
@@ -330,9 +333,28 @@ class GameManager:
 from useComputer.useComputer import UseComputer
 from feedingGame.feedingGame3 import FeedingGame
 
-while True:
+if not sys.flags.debug:
+  # in a loop to keep restarting the game
+  while True:
+    try:
+      gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .2)
+      #gameManager = GameManager([(FeedingGame, (""))], (1100, 750), .1)
+      #gameManager = GameManager([(UseComputer, (""))], (400, 400), .1)
+      #runs the game
+      gameManager.pay_select_game()
+    except Exception as exp:
+      # write errors to file and keep playing if not in debug
+      errorFile = open("errorLog.txt", "a")
+      errorFile.write(exp.message)
+
+    time.sleep(1)
+
+else:
+  while True:
     gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .2)
+    #print("---init done")
     #gameManager = GameManager([(FeedingGame, (""))], (1100, 750), .1)
     #gameManager = GameManager([(UseComputer, (""))], (400, 400), .1)
-
     gameManager.pay_select_game()
+
+    print("-------exit game")

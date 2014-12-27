@@ -45,7 +45,6 @@ class UseComputer:
         self.gameState.useScreen = True
         
     def main_game(self):
-        print('main game')
         #switch the display to the computer
         self.inputHandler.switch_to_port(self.inputHandler.compPort)
         
@@ -111,8 +110,8 @@ class UseComputer:
             self.gameState.state = self.gameState.GAME_OVER_STATE
 
     def game_over(self):
-        print('game over')
-    
+      print("------------game over ----------")
+
     def get_score(self):
         return None
 
