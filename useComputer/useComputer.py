@@ -87,7 +87,6 @@ class UseComputer:
 
     def change_level(self):
         self.gameState.useScreen = False
-        print('level over')
         #switch back to pi
         self.inputHandler.switch_to_port(self.inputHandler.piPort)
 
