@@ -10,4 +10,16 @@ install vim
 #http://linuxg.net/how-to-install-vim-7-4-on-ubuntu-13-10-13-04-12-04-linux-mint-16-15-13-and-debian-sid/
 #The add-apt-repository ppa:fcwu-tw/ppa command requires sudo apt-get install python-software-properties
 
+ssh to pi: ssh -X pi@ipaddress
+Set static ip address on pi
+Hacky fix for X11 connection rejected because of wrong authentication. when running game with sudo and Xterm:
+sudo cp ~/.Xauthority /.Xauthority
+
 for file sharing: http://www.maketecheasier.com/turn-raspberry-pi-into-file-server/
+
+Install pip:
+https://bootstrap.pypa.io/get-pip.py
+sudo python get-pip.py
+
+Install mock
+sudo pip install mock
