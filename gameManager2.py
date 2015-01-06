@@ -140,18 +140,19 @@ class GameManager:
 
         self.game = self.allGameInfos[gameNum][0](self.gameDisplayer, self.inputHandler, self.allGameInfos[gameNum][1])
 
-        #state machine
-        while(True):        
-            if(self.game.gameState.state == self.game.gameState.INTRO_STATE):
-                #run the games intro function
-                self.game.intro()
-            if(self.game.gameState.state == self.game.gameState.GAME_STATE):
-                #run this classes main_game function.
-                self.main_game()
-            if(self.game.gameState.state == self.game.gameState.GAME_OVER_STATE):
-                #runs this classes game_over function.
-                self.game_over()
-                break
+        if not sys.flags.debug:
+            #state machine
+            while(True):        
+                if(self.game.gameState.state == self.game.gameState.INTRO_STATE):
+                    #run the games intro function
+                    self.game.intro()
+                if(self.game.gameState.state == self.game.gameState.GAME_STATE):
+                    #run this classes main_game function.
+                    self.main_game()
+                if(self.game.gameState.state == self.game.gameState.GAME_OVER_STATE):
+                    #runs this classes game_over function.
+                    self.game_over()
+                    break
 
 
     def main_game(self):
