@@ -20,6 +20,11 @@ class GameManager:
 	      #The hdmi ports the devices are on
         piPort = 1
         compPort = 2
+        
+        self.gameCoinCost = 4
+        if sys.flags.debug:
+            self.gameCoinCost = 0
+
 
         #initialises the screen and display
         self.allGameInfos = allGameInfos
@@ -65,26 +70,33 @@ class GameManager:
     def pay_select_game(self):
         self.inputHandler.switch_to_port(self.inputHandler.piPort)
 
-        #print("pay select start")
+        if sys.flags.debug:
+            print("pay select start")
         textStart = self.screenSize[1] - self.charHeight*2
         #setup movie intro
-        #print("before movie made")
+        if sys.flags.debug:
+            print("before movie made")
         pygame.mixer.quit()
-        promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg')
-        #print("movie made")
+        print("mixer quited")
+        # Sometimes crashes with:
+        #Fatal Python error: (pygame parachute) Segmentation Fault
+        #Aborted (core dumped)
+        promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg') #ERROR CRASH ON THIS LINE!!!!!!!!!!
+        if sys.flags.debug:
+            print("movie made")
         promoRect = self.screen.get_rect()
         promoRect.height = textStart
         promoVideo.set_display(self.totalScreen, promoRect)
 
-        #print("movie set")
+        if sys.flags.debug:
+            print("movie set")
 
-        gameCoinCost = 5 
 
         coinToCents = 5
 
         #display insert coin
         self.screen.fill((0, 0, 0))
-        tDisplay = self.fDisplay.render("Price: {}cents".format(gameCoinCost*coinToCents), 1, (0, 255, 0))
+        tDisplay = self.fDisplay.render("Price: {}cents".format(self.gameCoinCost*coinToCents), 1, (0, 255, 0))
         self.screen.blit(tDisplay, (0, textStart))
         self.gameDisplayer.display_game()
 
@@ -103,17 +115,20 @@ class GameManager:
                 if mouse[0]:
                     self.inputHandler.coin_signal_detected(None)
 
-            accepted = self.inputHandler.coinCount >= gameCoinCost
+            accepted = self.inputHandler.coinCount >= self.gameCoinCost
 
             if preCoinCount < self.inputHandler.coinCount:
                 promoVideo.stop()
 
-                tCoinsLeft = self.fDisplay.render("Please insert {} more cents.".format((gameCoinCost - self.inputHandler.coinCount)*coinToCents), 1, (0, 255, 0))
+                tCoinsLeft = self.fDisplay.render("Please insert {} more cents.".format((self.gameCoinCost - self.inputHandler.coinCount)*coinToCents), 1, (0, 255, 0))
                 
                 self.screen.fill((0, 0, 0), coinsRect)
                 self.screen.blit(tCoinsLeft, coinsRect)
                 self.gameDisplayer.display_game()
                 
+            if sys.flags.debug:
+                print("movie loop")
+
             preCoinCount = self.inputHandler.coinCount
 
             self.inputHandler.event_handle()
@@ -127,9 +142,12 @@ class GameManager:
 
         images = [load_image(resourcePath + self.gameImagePath) for resourcePath in self.gameResourcesPaths]
         selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
-        #use user_select to allow the user to select the hero image
+        #use user_select to allow the user to select the game
         selectheader = self.fDisplay.render("Select your game", 1, (255, 0, 0))
-        gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
+        if sys.flags.debug:
+            gameNum = 0
+        else:
+            gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
 
         #run the selected game
         self.run_game(gameNum)
