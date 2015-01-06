@@ -10,7 +10,7 @@ from display import *
 #It has a game_state attribute from the class GameState
 #It has __init__ inputs of screen, inputHandeler, resourcePath
 class GameManager:
-    def __init__(self, allGameInfos, screenSize, scoreScreenRatio):
+    def __init__(self, allGameInfos, screenSize, scoreScreenRatio, testingGame = False):
         #The GPIO pins used on the raspberry pi for input and output
         coinPin = 21
         hdmiOutPin = 10
@@ -34,7 +34,10 @@ class GameManager:
         self.scoreScreenSize = (int(self.screenSize[0] * scoreScreenRatio + .5), int(self.screenSize[1] + .5))
         self.scoreScreen = pygame.Surface(self.scoreScreenSize)
 
-        self.totalScreen = pygame.display.set_mode((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))# pygame.FULLSCREEN)
+        if testingGame:
+            self.totalScreen = pygame.Surface((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))
+        else:
+            self.totalScreen = pygame.display.set_mode((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))# pygame.FULLSCREEN)
 
         #set path
         #self.resourcePath = os.path.dirname(os.path.abspath(sys.executable)) + "/resources"
@@ -57,11 +60,11 @@ class GameManager:
         self.inputHandler.piPort = piPort
         self.inputHandler.compPort = compPort
 
-        self.inputHandler.switch_to_port(self.inputHandler.piPort)
-
-        self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen)
+        self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen, testingGame)
 
     def pay_select_game(self):
+        self.inputHandler.switch_to_port(self.inputHandler.piPort)
+
         #print("pay select start")
         textStart = self.screenSize[1] - self.charHeight*2
         #setup movie intro
@@ -154,7 +157,6 @@ class GameManager:
                     self.game_over()
                     break
 
-
     def main_game(self):
         while (self.game.gameState.state == self.game.gameState.GAME_STATE
                or self.game.gameState == self.game.gameState.LEVEL_OVER_STATE):
@@ -169,7 +171,6 @@ class GameManager:
 
     def game_over(self):
         scoreData = ["", self.game.get_score()]
-        #print("-------- start Score stuff---------")
         #make if a game doesn't have high scores, it returns None
         if scoreData[1]:
             if self.scoreSaver.is_high_score(scoreData):
@@ -178,15 +179,10 @@ class GameManager:
                     self.scoreSaver.add_score(scoreData)
                 self.update_score_display()
             
-        #print("_------ end score___")
         self.game.game_over()
 
         #make sure it's swithced to the correct port after the game
         self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
-
-        #print("-------end switch port-------")
-
-#        cleanupGpio()
 
     #update the side score panel with the high scores from the file
     def update_score_display(self):

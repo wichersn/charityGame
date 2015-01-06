@@ -27,3 +27,4 @@ else:
     #gameManager = GameManager([(UseComputer, (""))], (400, 400), .1)
     gameManager.pay_select_game()
 
+    time.sleep(1)

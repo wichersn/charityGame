@@ -29,14 +29,19 @@ class TextDisplay:
 
 #To help display the regular screen and the score screen
 class GameDisplayer:
-    def __init__(self, screen, totalScreen):
+    def __init__(self, screen, totalScreen, testingGame = False):
         self.screen = screen
         self.totalScreen = totalScreen
-        
+        self.testingGame = testingGame
+
     #displays the game screen on the total screen
     def display_game(self):
             self.totalScreen.blit(self.screen, (0, 0))
-            pygame.display.flip()
+            if not self.testingGame:
+                pygame.display.flip()
+            else:
+                print("display")
+                print("")
             
 #displays images on the screen and allows the user to chose one
 def user_select(header, gameDisplayer, inputHandler, images, selectionImage):

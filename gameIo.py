@@ -150,6 +150,7 @@ class InputHandler:
         #set up the gpio pins
         try:
             GPIO.setmode(GPIO.BOARD)
+            GPIO.setwarnings(False)
             GPIO.setup(coinPinNum, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
             self.hasGpio = True
         except:
@@ -333,3 +334,21 @@ class InputHandler:
     def check_switch_to_port(self, port):
         if self.hasGpio and not self.get_pi_port() == port:
             self.switch_to_port(port)
+
+    def start_random_output(self):
+        if self.hasGpio:
+            print("started rand output")
+            thread = threading.Thread(target=self.random_output)
+            thread.start()
+
+    def random_output(self):
+        mockPins = [3,5,7]
+        print("setup GPIO")
+        for mockPin in mockPins:
+            GPIO.setup(mockPin, GPIO.OUT)
+
+        while True:
+            for mockPin in mockPins:
+                GPIO.output(mockPin, random.random() < .1)
+
+            time.sleep(.1)
