@@ -25,28 +25,27 @@ def get_input_mock_wrap(self):
     return get_input_mock_funct
 
 
-while True:
-    try:
-        print("start")
-        gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .2, True)
+try:
+    print("start")
+    gameManager = GameManager([(FeedingGame, ("")), (UseComputer, (""))], (1100, 650), .2, True)
 
-        print("done init")
+    print("done init")
 
-        input_mock = Mock()
-        input_mock.side_effect = get_input_mock_wrap(gameManager)
-        gameManager.inputHandler.get_input = input_mock
+    input_mock = Mock()
+    input_mock.side_effect = get_input_mock_wrap(gameManager)
+    gameManager.inputHandler.get_input = input_mock
 
-        gameManager.inputHandler.start_random_output()
+    gameManager.inputHandler.start_random_output()
 
-        print("starting game")
+    print("starting game")
 
-        gameManager.pay_select_game()
+    gameManager.pay_select_game()
 
-    except Exception as exp:
-      # write errors to file and keep playing if not in debug
-      errorFile = open("errorLog.txt", "a")
-      errorFile.write(exp.message)
+except Exception as exp:
+  # write errors to file and keep playing if not in debug
+  errorFile = open("errorLog.txt", "a")
+  errorFile.write(exp.message)
 
-      print("Error!!", exp.message)
+  print("Error!!", exp.message)
 
-    time.sleep(1)
+time.sleep(1)

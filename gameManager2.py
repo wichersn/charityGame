@@ -91,7 +91,6 @@ class GameManager:
         if sys.flags.debug:
             print("movie set")
 
-
         coinToCents = 5
 
         #display insert coin

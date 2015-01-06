@@ -46,6 +46,8 @@ class GameDisplayer:
 #displays images on the screen and allows the user to chose one
 def user_select(header, gameDisplayer, inputHandler, images, selectionImage):
     screen = gameDisplayer.screen
+
+
     screenSize = (screen.get_width(), screen.get_height())
 
     #resise the images
