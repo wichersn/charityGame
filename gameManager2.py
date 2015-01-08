@@ -22,9 +22,8 @@ class GameManager:
         compPort = 2
         
         self.gameCoinCost = 4
-        if sys.flags.debug:
-            self.gameCoinCost = 0
 
+        self.testingGame = testingGame
 
         #initialises the screen and display
         self.allGameInfos = allGameInfos
@@ -39,7 +38,7 @@ class GameManager:
         self.scoreScreenSize = (int(self.screenSize[0] * scoreScreenRatio + .5), int(self.screenSize[1] + .5))
         self.scoreScreen = pygame.Surface(self.scoreScreenSize)
 
-        if testingGame:
+        if testingGame and (not sys.flags.debug):
             self.totalScreen = pygame.Surface((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))
         else:
             self.totalScreen = pygame.display.set_mode((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))# pygame.FULLSCREEN)
@@ -70,26 +69,14 @@ class GameManager:
     def pay_select_game(self):
         self.inputHandler.switch_to_port(self.inputHandler.piPort)
 
-        if sys.flags.debug:
-            print("pay select start")
         textStart = self.screenSize[1] - self.charHeight*2
         #setup movie intro
-        if sys.flags.debug:
-            print("before movie made")
         pygame.mixer.quit()
-        print("mixer quited")
-        # Sometimes crashes with:
-        #Fatal Python error: (pygame parachute) Segmentation Fault
-        #Aborted (core dumped)
-        promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg') #ERROR CRASH ON THIS LINE!!!!!!!!!!
-        if sys.flags.debug:
-            print("movie made")
+        promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg')
+
         promoRect = self.screen.get_rect()
         promoRect.height = textStart
         promoVideo.set_display(self.totalScreen, promoRect)
-
-        if sys.flags.debug:
-            print("movie set")
 
         coinToCents = 5
 
@@ -124,9 +111,6 @@ class GameManager:
                 self.screen.fill((0, 0, 0), coinsRect)
                 self.screen.blit(tCoinsLeft, coinsRect)
                 self.gameDisplayer.display_game()
-                
-            if sys.flags.debug:
-                print("movie loop")
 
             preCoinCount = self.inputHandler.coinCount
 
@@ -143,10 +127,7 @@ class GameManager:
         selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
         #use user_select to allow the user to select the game
         selectheader = self.fDisplay.render("Select your game", 1, (255, 0, 0))
-        if sys.flags.debug:
-            gameNum = 0
-        else:
-            gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
+        gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
 
         #run the selected game
         self.run_game(gameNum)
@@ -160,19 +141,22 @@ class GameManager:
 
         self.game = self.allGameInfos[gameNum][0](self.gameDisplayer, self.inputHandler, self.allGameInfos[gameNum][1])
 
-        if not sys.flags.debug:
-            #state machine
-            while(True):        
+        #state machine
+        while(True):        
+            if (not sys.flags.debug):
                 if(self.game.gameState.state == self.game.gameState.INTRO_STATE):
                     #run the games intro function
                     self.game.intro()
                 if(self.game.gameState.state == self.game.gameState.GAME_STATE):
                     #run this classes main_game function.
                     self.main_game()
-                if(self.game.gameState.state == self.game.gameState.GAME_OVER_STATE):
-                    #runs this classes game_over function.
-                    self.game_over()
-                    break
+
+            if(self.game.gameState.state == self.game.gameState.GAME_OVER_STATE):
+                #runs this classes game_over function.
+                self.game_over()
+                break
+        if self.testingGame:
+            self.inputHandler.keepRandOut = False 
 
     def main_game(self):
         while (self.game.gameState.state == self.game.gameState.GAME_STATE

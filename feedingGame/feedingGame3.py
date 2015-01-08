@@ -343,4 +343,4 @@ class FeedingGame:
             j, buttons = self.inputHandler.get_input()
             click = buttons[1]
             
-        self.gameState.state = self.gameState.INTRO_STATE
+        #self.gameState.state = self.gameState.INTRO_STATE

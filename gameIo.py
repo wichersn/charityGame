@@ -209,8 +209,10 @@ class InputHandler:
 
                 if self.btnComboI >= len(self.btnCombo):
                   self.btnComboI = 0
-                  close()
-                  #os.system("shutdown now -h")
+                  if sys.flags.debug:
+                    close()
+                  else:
+                    os.system("shutdown now -h")
 
     #Returns the joystick position and the buttons pressed
     #uses the mouse to act as the joystick if the joystick isn't there
@@ -337,18 +339,17 @@ class InputHandler:
 
     def start_random_output(self):
         if self.hasGpio:
-            print("started rand output")
+            self.keepRandOut = True
             thread = threading.Thread(target=self.random_output)
             thread.start()
 
     def random_output(self):
         mockPins = [3,5,7]
-        print("setup GPIO")
         for mockPin in mockPins:
             GPIO.setup(mockPin, GPIO.OUT)
 
-        while True:
+        while self.keepRandOut:
             for mockPin in mockPins:
-                GPIO.output(mockPin, random.random() < .1)
+                GPIO.output(mockPin, random.random() < .3)
 
-            time.sleep(.1)
+            time.sleep(.3)

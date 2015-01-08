@@ -5,7 +5,7 @@ GPIO.setmode(GPIO.BOARD) ## Use board pin numbering
 GPIO.setwarnings(False)
 GPIO.setup(7, GPIO.OUT) ## Setup GPIO Pin 7 to OUTimport RPi.GPIO as GPIO ## Import GPIO library
 
-coinPinNum = 11
+coinPinNum = 12
 
 def coinSignalDetected(arg):
     global coinsCount

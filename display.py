@@ -1,4 +1,4 @@
-import pygame, time
+import pygame, time, random, sys
 
 #allows for text that's word wraped
 class TextDisplay:
@@ -37,11 +37,10 @@ class GameDisplayer:
     #displays the game screen on the total screen
     def display_game(self):
             self.totalScreen.blit(self.screen, (0, 0))
-            if not self.testingGame:
+            if (not self.testingGame) or sys.flags.debug:
                 pygame.display.flip()
             else:
-                print("display")
-                print("")
+                print("display", random.random())
             
 #displays images on the screen and allows the user to chose one
 def user_select(header, gameDisplayer, inputHandler, images, selectionImage):
