@@ -13,9 +13,9 @@ class GameManager:
     def __init__(self, allGameInfos, screenSize, scoreScreenRatio, testingGame = False):
         #The GPIO pins used on the raspberry pi for input and output
         coinPin = 21
-        hdmiOutPin = 10
-        hdmiInPin1 = 8
-        hdmiInPin2 = 12
+        hdmiOutPin = 16
+        hdmiInPin1 = 10
+        hdmiInPin2 = 8 
 
 	      #The hdmi ports the devices are on
         piPort = 1

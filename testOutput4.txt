@@ -1,0 +1,9 @@
+start
+done init
+starting game
+Traceback (most recent call last):
+  File "gameTest.py", line 40, in <module>
+    gameManager.pay_select_game()
+  File "/media/flashDrive/charityGame/gameManager2.py", line 122, in pay_select_game
+    time.sleep(.1)
+KeyboardInterrupt

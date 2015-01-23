@@ -40,7 +40,8 @@ class GameDisplayer:
             if (not self.testingGame) or sys.flags.debug:
                 pygame.display.flip()
             else:
-                print("display", random.random())
+                #print("display", random.random())
+                pass
             
 #displays images on the screen and allows the user to chose one
 def user_select(header, gameDisplayer, inputHandler, images, selectionImage):

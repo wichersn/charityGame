@@ -43,7 +43,7 @@ class UseComputer:
         self.gameState.state = self.gameState.GAME_STATE
 
         self.gameState.useScreen = True
-        
+
     def main_game(self):
         #switch the display to the computer
         self.inputHandler.switch_to_port(self.inputHandler.compPort)

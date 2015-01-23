@@ -318,6 +318,7 @@ class InputHandler:
             time.sleep(self.hdmiWaitTime)
             GPIO.output(self.hdmiOutPin, False) 
             time.sleep(self.hdmiWaitTime)
+            print("switch")
 
     #disables keep switching
     def stop_switching(self, e):
@@ -352,4 +353,4 @@ class InputHandler:
             for mockPin in mockPins:
                 GPIO.output(mockPin, random.random() < .3)
 
-            time.sleep(.3)
+                time.sleep(.2)
