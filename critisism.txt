@@ -1,0 +1,9 @@
+label buttons on joystick better- put stickers on the button saying what they do.
+
+Make text bigger
+
+Improve text contrast
+
+get rid of annoying red dot in middle
+
+make power ups bigger
