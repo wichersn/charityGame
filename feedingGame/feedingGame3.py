@@ -21,11 +21,16 @@ class FeedingGame:
         self.gameState = GameState()
         self.gameState.state = self.gameState.INTRO_STATE
 
-        self.fDisplay = pygame.font.SysFont('Courier New', int(self.screenSize[1] / 30))
+        self.fDisplay = pygame.font.SysFont('Courier New', int(self.screenSize[1] * 1/20))
         self.charLen = self.fDisplay.metrics("W")[0][4] #get the width of W since all letter widths are the same
         self.charHeight = self.fDisplay.get_height()
 
-        self.fontColor = (0,0,255)
+        self.fChangeLevel = pygame.font.SysFont('Courier New', int(self.screenSize[1] / 15))
+        self.changeLevelBackground = (255,255,255)
+        self.changeLevelTextColor = (0,100,0)
+
+        self.fontColor = (0,100,0)
+        self.backgroundColor = (200,230,200)
         
     def intro(self):
         #reset the vars
@@ -150,12 +155,11 @@ class FeedingGame:
         #print("start main game")
         speedFactor = self.speedFactor
 
-
         allPowerTypes = (PowerType(None, self.moneyFactor*30, 0, self.powerImages[0], ""),
                          PowerType(None, 0, 20, self.powerImages[1], "FREE FOOD!"))
 
         distractions = Distraction(self.screen, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
-        powerUpGroup = PowerUpGroup(self.screen, .02, speedFactor, allPowerTypes)
+        powerUpGroup = PowerUpGroup(self.screen, .04, speedFactor, allPowerTypes)
         peopleGroup = PeopleGroup(self.screen, self.peopleImages, speedFactor)
         peopleGroup.reset_people(self.numTotalPeople)
         food = FoodGroup(self.screen, peopleGroup, self.allFoodTypes)
@@ -187,10 +191,11 @@ class FeedingGame:
             self.inputHandler.event_handle()
 
             timeMeasure.start_clock()
-            self.screen.fill((100, 100, 100))
+            self.screen.fill(self.backgroundColor)
 
-            #for help using the mouse as the joystick
-            draw.circle(self.screen, (255,0,0), (int(self.screen.get_width()/2), int(self.screen.get_height()/2)), 10)
+            if sys.flags.debug:
+              #for help using the mouse as the joystick
+              draw.circle(self.screen, (255,0,0), (int(self.screen.get_width()/2), int(self.screen.get_height()/2)), 10)
 
             #moves the hero with the joystick
             newJoystickPos, buttonsClicked = self.inputHandler.get_input(True)
@@ -294,17 +299,16 @@ class FeedingGame:
         
         celibrator = Distraction(self.screen, self.speedFactor * 2, 1, self.distractionImages, self.congratsImages)
 
-        tDisplay = self.fDisplay.render("Congradulations, Prepare for level " + str(self.gameState.level + 1),
-                                            1, (0, 255, 0))
-        tDisplay2 = self.fDisplay.render("Press button 2 to continue" + str(self.gameState.level + 1),
-                                            1, (0, 255, 0))
+        tDisplay = self.fChangeLevel.render("Congradulations, Prepare for level " + str(self.gameState.level + 1),
+                                            1, self.changeLevelTextColor)
+        tDisplay2 = self.fChangeLevel.render("Press button 2 to continue", 1, self.changeLevelTextColor)
 
         buttons = (False, False, False)
         while not buttons[1]:
             self.inputHandler.event_handle()
             j, buttons = self.inputHandler.get_input()
             
-            self.screen.fill((200, 200, 200))
+            self.screen.fill(self.changeLevelBackground)
             celibrator.turn_draw()
             self.screen.blit(tDisplay, (0, self.screenSize[1]/2))
             self.screen.blit(tDisplay2, (0, self.screenSize[1]/2 + 40))
