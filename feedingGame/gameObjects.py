@@ -151,10 +151,14 @@ class PeopleImages:
             self.dead = dead
             self.eating = eating
             self.normal = normal
+
+# For storing the sounds that the person can make
+class PersonSounds:
+    pass
        
 class Person:
     SIZE_FACTOR = .07
-    def __init__(self, screen, images, otherPeopleGroup, moveSpeedFactor):
+    def __init__(self, screen, images, sounds, otherPeopleGroup, moveSpeedFactor):
         self.sizeScaleFactor = screen.get_width()
         self.screenSize = (screen.get_width(), screen.get_height())
         rectSize = self.sizeScaleFactor * Person.SIZE_FACTOR
@@ -172,6 +176,8 @@ class Person:
         self.stopProb = .5
         
         self.screen = screen
+
+        self.sounds = sounds
 
         self.speedFactor = moveSpeedFactor
         self.moveSpeed = self.speedFactor * self.sizeScaleFactor * 1.5
@@ -268,6 +274,8 @@ class Person:
                 self.fullfillment += food.fullfill
                 self.timeToDigest = food.timeToDigest
 
+                self.sounds.eatingSound.play()   
+
                 self.set_size([self.boundRect.width * self.growFactor, self.boundRect.height * self.growFactor])
 
                 if self.fullfillment >= 1:
@@ -303,7 +311,8 @@ class Person:
         self.screen.blit(image, self.boundRect)
 
 class PeopleGroup:
-    def __init__(self, screen, peopleImages, speedFactor):
+    # sounds is a structure of sounds
+    def __init__(self, screen, sounds, peopleImages, speedFactor):
         self.allPeople = []
         self.hungryPeople = []
         self.normalPeople = []
@@ -315,6 +324,7 @@ class PeopleGroup:
         self.personMoveSpeed = self.speedFactor * self.sizeScaleFactor
 
         self.peopleImages = peopleImages
+        self.sounds = sounds
                      
 ##        self.donateFood = None
         self.stuffToDonate = None
@@ -354,7 +364,7 @@ class PeopleGroup:
         return deadCount
 
     def add_person(self):
-        personToAdd = Person(self.screen, self.peopleImages, self, self.speedFactor)
+        personToAdd = Person(self.screen, self.peopleImages, self.sounds, self, self.speedFactor)
         self.allPeople.append(personToAdd)
         self.hungryPeople.append(personToAdd)
             

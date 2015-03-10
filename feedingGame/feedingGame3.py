@@ -133,6 +133,8 @@ class FeedingGame:
         hasPowerTipImg = load_image(self.resourcePath + "/tips/hasPower.bmp")
         self.allTipShower.add_tip("hasPower", None, (lambda hero: hero.powerUp.type != PowerType.noneType), (lambda hero: Rect((hero.tPowerX, hero.textTop),(1,1))), hasPowerTipImg)
 
+        self.peopleSounds = PersonSounds();
+        self.peopleSounds.eatingSound = pygame.mixer.Sound(self.resourcePath + '/soundfx/chomp.wav')
 
         #setup the first level
         self.increase_level()
@@ -157,10 +159,11 @@ class FeedingGame:
 
         allPowerTypes = (PowerType(None, self.moneyFactor*30, 0, self.powerImages[0], ""),
                          PowerType(None, 0, 20, self.powerImages[1], "FREE FOOD!"))
+       
 
         distractions = Distraction(self.screen, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
         powerUpGroup = PowerUpGroup(self.screen, .04, speedFactor, allPowerTypes)
-        peopleGroup = PeopleGroup(self.screen, self.peopleImages, speedFactor)
+        peopleGroup = PeopleGroup(self.screen, self.peopleSounds, self.peopleImages, speedFactor)
         peopleGroup.reset_people(self.numTotalPeople)
         food = FoodGroup(self.screen, peopleGroup, self.allFoodTypes)
         hero = Hero(self.screen, 10, food, powerUpGroup, speedFactor * 10, self.moneyFactor, self.heroImage, self.heroAim)

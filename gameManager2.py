@@ -30,6 +30,8 @@ class GameManager:
 
         pygame.init()
         pygame.joystick.init()
+        print('INIT!!!!!!!!!!!!')
+        pygame.mixer.init()
 
         #setup the screen
         self.screenSize = screenSize
@@ -122,6 +124,8 @@ class GameManager:
             time.sleep(.1)
 
         promoVideo.stop()
+        #Turn back on after quit
+        pygame.mixer.init()
 
         images = [load_image(resourcePath + self.gameImagePath) for resourcePath in self.gameResourcesPaths]
         selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
