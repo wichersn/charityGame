@@ -1,0 +1,6 @@
+Sound effects from freesound.org:
+gameOver: https://www.freesound.org/people/spazzo_1493/sounds/76376/
+Dying sounds: https://www.freesound.org/people/afleetingspeck/sounds/232444/
+Power up: https://www.freesound.org/people/GameAudio/sounds/220173/
+Level up: https://www.freesound.org/people/BustedEarLobes/sounds/156447/
+
