@@ -138926,3 +138926,5 @@ Traceback (most recent call last):
   File "/usr/lib/python2.7/sre_parse.py", line 198, in match
     self.__next()
 KeyboardInterrupt
+XIO:  fatal IO error 4 (Interrupted system call) on X server ":0.0"
+      after 75 requests (73 known processed) with 0 events remaining.
