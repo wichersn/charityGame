@@ -161,6 +161,7 @@ class Person:
     def __init__(self, screen, images, sounds, otherPeopleGroup, moveSpeedFactor):
         self.sizeScaleFactor = screen.get_width()
         self.screenSize = (screen.get_width(), screen.get_height())
+        #TODO: make it so the width and height can be different
         rectSize = self.sizeScaleFactor * Person.SIZE_FACTOR
         self.boundRect = Rect(0,0, rectSize, rectSize)
         self.boundRect.center = self.wantedPos = [random.randint(0, self.screenSize[0]),
