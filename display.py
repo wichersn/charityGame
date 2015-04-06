@@ -37,7 +37,7 @@ class GameDisplayer:
     #displays the game screen on the total screen
     def display_game(self):
             self.totalScreen.blit(self.screen, (0, 0))
-            if (not self.testingGame) or sys.flags.debug:
+            if (not self.testingGame):
                 pygame.display.flip()
             else:
                 #print("display", random.random())

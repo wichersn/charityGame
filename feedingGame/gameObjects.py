@@ -158,19 +158,19 @@ class PersonSounds:
        
 class Person:
     SIZE_FACTOR = .07
-    def __init__(self, screen, images, sounds, otherPeopleGroup, moveSpeedFactor):
+    def __init__(self, screen, images, sounds, otherPeopleGroup, widthToHeight, moveSpeedFactor):
         self.sizeScaleFactor = screen.get_width()
         self.screenSize = (screen.get_width(), screen.get_height())
         #TODO: make it so the width and height can be different
-        rectSize = self.sizeScaleFactor * Person.SIZE_FACTOR
-        self.boundRect = Rect(0,0, rectSize, rectSize)
+        width = self.sizeScaleFactor * Person.SIZE_FACTOR
+        self.boundRect = Rect(0,0, width, width * widthToHeight)
         self.boundRect.center = self.wantedPos = [random.randint(0, self.screenSize[0]),
                                                   random.randint(0, self.screenSize[1])]
         self.growFactor = 1.1
         
         self.allImages = PeopleImages(images)
 
-        self.set_size([rectSize, rectSize])
+        self.set_size([self.boundRect.width, self.boundRect.height])
 
         #The probability that the person will change direction or stop when they move
         self.changeDirectionProb = .03
@@ -262,7 +262,6 @@ class Person:
         #self.allImages.dead = pygame.transform.scale(self.allImages.dead, size)
         self.allImages.eating = pygame.transform.scale(self.allImages.eating, size)
         self.allImages.normal = pygame.transform.scale(self.allImages.normal, size)
-
         for imageNum in range(len(self.allImages.images)):
             self.allImages.images[imageNum] = pygame.transform.scale(self.allImages.images[imageNum], size)
 
@@ -318,6 +317,10 @@ class PeopleGroup:
         self.hungryPeople = []
         self.normalPeople = []
 
+        # calculate bassed on the width to height ratio of the first image
+        oneImageRect = peopleImages.images[0].get_rect() 
+        self.widthToHeight = float(oneImageRect.height) / float(oneImageRect.width)
+
         self.screen = screen
 
         self.speedFactor = speedFactor
@@ -365,7 +368,7 @@ class PeopleGroup:
         return deadCount
 
     def add_person(self):
-        personToAdd = Person(self.screen, self.peopleImages, self.sounds, self, self.speedFactor)
+        personToAdd = Person(self.screen, self.peopleImages, self.sounds, self, self.widthToHeight, self.speedFactor)
         self.allPeople.append(personToAdd)
         self.hungryPeople.append(personToAdd)
             
