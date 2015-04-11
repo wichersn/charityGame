@@ -134,10 +134,13 @@ class GameManager:
         pygame.mixer.init()
 
         images = [load_image(resourcePath + self.gameImagePath) for resourcePath in self.gameResourcesPaths]
-        selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
-        #use user_select to allow the user to select the game
-        selectheader = self.fDisplay.render("Select your game", 1, (255, 0, 0))
-        gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
+        if len(images) > 1:
+            selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
+            #use user_select to allow the user to select the game
+            selectheader = self.fDisplay.render("Select your game", 1, (255, 0, 0))
+            gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
+        else:
+            gameNum = 0
 
         #run the selected game
         self.run_game(gameNum)

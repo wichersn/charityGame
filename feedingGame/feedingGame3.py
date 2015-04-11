@@ -41,17 +41,18 @@ class FeedingGame:
         self.powerImages = (load_image(self.resourcePath + '/money.bmp'),
                             load_image(self.resourcePath + '/free.bmp'))
 
-        self.foodImages = (load_image(self.resourcePath+'/candy.bmp'),
+        self.foodImages = (load_image(self.resourcePath+'/candy.png'),
                            load_image(self.resourcePath+'/burger.bmp'))
 
         peoplePath = self.resourcePath  + '/people'
-        peopleImages = load_images(peoplePath + '/p{}.bmp')
+        peopleImages = load_images(peoplePath + '/p{}.png')
         print("peopleImgs:",peopleImages[0].get_rect().width, peopleImages[0].get_rect().height)
-        self.peopleImages = PeopleImages(None, peopleImages, None, load_image(peoplePath + "/eating.bmp"),
-                                         load_image(peoplePath + "/normal.bmp"))
+        self.peopleImages = PeopleImages(None, peopleImages, None, load_image(peoplePath + "/eating.png"),
+                                         load_image(peoplePath + "/normal.png"))
 
         selectionImage = load_image(self.resourcePath + "/characters/selector.bmp")
-        heroImages = load_images(self.resourcePath + "/characters/h{}.bmp")
+        heroImages = load_images(self.resourcePath + "/characters/h{}.png")
+        print("heroImages", heroImages)
         self.heroAim = load_image(self.resourcePath + "/target.bmp")
 
         self.congratsImages = load_images(self.resourcePath + "/distractions/c{}.bmp")

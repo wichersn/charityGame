@@ -1,6 +1,7 @@
 import pygame, sys, os, random, math, time, copy, json
 from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN
 from chordConversions import *
+from display import resize_img
 
 class Hero:
     def __init__(self, screen, maxAmo, foodAddTo, powersToGet, speedFactor,
@@ -37,7 +38,8 @@ class Hero:
 
         self.refreshText()
 
-        self.image = pygame.transform.scale(image, (int(rectSize), int(rectSize)))
+        #self.image = pygame.transform.scale(image, (int(rectSize), int(rectSize)))
+        self.image = resize_img(image, rectSize, True)
 
         self.aimImage = pygame.transform.scale(aimImage, (int(rectSize/2), int(rectSize/2)))
         self.aimRect = self.aimImage.get_rect()
