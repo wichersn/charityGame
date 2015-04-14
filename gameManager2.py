@@ -1,10 +1,11 @@
-import pygame, inspect
+import pygame, inspect, string
 from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN
 from gameIo import *
 from chordConversions import *
 from loadImage import *
 from gameState import *
 from display import *
+from ScreenKeyboard import ScreenKeyboard
 
 #each game class has intro, main_game, change_level, game_over fuctions.
 #It has a game_state attribute from the class GameState
@@ -72,6 +73,11 @@ class GameManager:
         self.inputHandler.compPort = compPort
 
         self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen, testingGame)
+
+        allLetters = string.ascii_uppercase + " "
+        keyFont = pygame.font.SysFont('Courier New', int(screenWidth / 10))
+        self.screenKeyboard = ScreenKeyboard(allLetters, self.screen, self.inputHandler, keyFont, self.fDisplay, (255, 255, 255), "You got the high score! Please enter your name") 
+        self.screenKeyboard.init()
 
     def pay_select_game(self):
         if self.useHdmi:
@@ -187,7 +193,7 @@ class GameManager:
         #make if a game doesn't have high scores, it returns None
         if scoreData[1]:
             if self.scoreSaver.is_high_score(scoreData):
-                scoreData[0] = self.enter_student_num()
+                scoreData[0] = self.screenKeyboard.get_name_from_usr()
                 if scoreData[0] != None:
                     self.scoreSaver.add_score(scoreData)
                 self.update_score_display()
