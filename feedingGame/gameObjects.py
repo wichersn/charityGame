@@ -1,6 +1,7 @@
 import pygame, sys, os, random, math, time, copy, json
 from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN
 from chordConversions import *
+from display import resize_img
 
 class Hero:
     def __init__(self, screen, maxAmo, foodAddTo, powersToGet, speedFactor,
@@ -37,7 +38,8 @@ class Hero:
 
         self.refreshText()
 
-        self.image = pygame.transform.scale(image, (int(rectSize), int(rectSize)))
+        #self.image = pygame.transform.scale(image, (int(rectSize), int(rectSize)))
+        self.image = resize_img(image, rectSize, True)
 
         self.aimImage = pygame.transform.scale(aimImage, (int(rectSize/2), int(rectSize/2)))
         self.aimRect = self.aimImage.get_rect()
@@ -151,27 +153,34 @@ class PeopleImages:
             self.dead = dead
             self.eating = eating
             self.normal = normal
+
+# For storing the sounds that the person can make
+class PersonSounds:
+    pass
        
 class Person:
     SIZE_FACTOR = .07
-    def __init__(self, screen, images, otherPeopleGroup, moveSpeedFactor):
+    def __init__(self, screen, images, sounds, otherPeopleGroup, widthToHeight, moveSpeedFactor):
         self.sizeScaleFactor = screen.get_width()
         self.screenSize = (screen.get_width(), screen.get_height())
-        rectSize = self.sizeScaleFactor * Person.SIZE_FACTOR
-        self.boundRect = Rect(0,0, rectSize, rectSize)
+        #TODO: make it so the width and height can be different
+        width = self.sizeScaleFactor * Person.SIZE_FACTOR
+        self.boundRect = Rect(0,0, width, width * widthToHeight)
         self.boundRect.center = self.wantedPos = [random.randint(0, self.screenSize[0]),
                                                   random.randint(0, self.screenSize[1])]
         self.growFactor = 1.1
         
         self.allImages = PeopleImages(images)
 
-        self.set_size([rectSize, rectSize])
+        self.set_size([self.boundRect.width, self.boundRect.height])
 
         #The probability that the person will change direction or stop when they move
         self.changeDirectionProb = .03
         self.stopProb = .5
         
         self.screen = screen
+
+        self.sounds = sounds
 
         self.speedFactor = moveSpeedFactor
         self.moveSpeed = self.speedFactor * self.sizeScaleFactor * 1.5
@@ -255,7 +264,6 @@ class Person:
         #self.allImages.dead = pygame.transform.scale(self.allImages.dead, size)
         self.allImages.eating = pygame.transform.scale(self.allImages.eating, size)
         self.allImages.normal = pygame.transform.scale(self.allImages.normal, size)
-
         for imageNum in range(len(self.allImages.images)):
             self.allImages.images[imageNum] = pygame.transform.scale(self.allImages.images[imageNum], size)
 
@@ -267,6 +275,8 @@ class Person:
                 self.health += food.healthGain
                 self.fullfillment += food.fullfill
                 self.timeToDigest = food.timeToDigest
+
+                self.sounds.eatingSound.play()   
 
                 self.set_size([self.boundRect.width * self.growFactor, self.boundRect.height * self.growFactor])
 
@@ -303,10 +313,15 @@ class Person:
         self.screen.blit(image, self.boundRect)
 
 class PeopleGroup:
-    def __init__(self, screen, peopleImages, speedFactor):
+    # sounds is a structure of sounds
+    def __init__(self, screen, sounds, peopleImages, speedFactor):
         self.allPeople = []
         self.hungryPeople = []
         self.normalPeople = []
+
+        # calculate bassed on the width to height ratio of the first image
+        oneImageRect = peopleImages.images[0].get_rect() 
+        self.widthToHeight = float(oneImageRect.height) / float(oneImageRect.width)
 
         self.screen = screen
 
@@ -315,6 +330,7 @@ class PeopleGroup:
         self.personMoveSpeed = self.speedFactor * self.sizeScaleFactor
 
         self.peopleImages = peopleImages
+        self.sounds = sounds
                      
 ##        self.donateFood = None
         self.stuffToDonate = None
@@ -354,7 +370,7 @@ class PeopleGroup:
         return deadCount
 
     def add_person(self):
-        personToAdd = Person(self.screen, self.peopleImages, self, self.speedFactor)
+        personToAdd = Person(self.screen, self.peopleImages, self.sounds, self, self.widthToHeight, self.speedFactor)
         self.allPeople.append(personToAdd)
         self.hungryPeople.append(personToAdd)
             

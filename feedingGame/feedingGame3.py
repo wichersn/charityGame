@@ -9,7 +9,6 @@ from display import *
 class FeedingGame:
     #setup things that will be used later
     def __init__(self, gameDisplayer, inputHandler, additionalArgs):
-        #print("game start init")
         self.gameDisplayer = gameDisplayer
         self.screen = self.gameDisplayer.screen
         self.screenSize = (self.screen.get_width(), self.screen.get_height())
@@ -42,16 +41,18 @@ class FeedingGame:
         self.powerImages = (load_image(self.resourcePath + '/money.bmp'),
                             load_image(self.resourcePath + '/free.bmp'))
 
-        self.foodImages = (load_image(self.resourcePath+'/candy.bmp'),
+        self.foodImages = (load_image(self.resourcePath+'/candy.png'),
                            load_image(self.resourcePath+'/burger.bmp'))
 
         peoplePath = self.resourcePath  + '/people'
-        peopleImages = load_images(peoplePath + '/p{}.bmp')
-        self.peopleImages = PeopleImages(None, peopleImages, None, load_image(peoplePath + "/eating.bmp"),
-                                         load_image(peoplePath + "/normal.bmp"))
+        peopleImages = load_images(peoplePath + '/p{}.png')
+        print("peopleImgs:",peopleImages[0].get_rect().width, peopleImages[0].get_rect().height)
+        self.peopleImages = PeopleImages(None, peopleImages, None, load_image(peoplePath + "/eating.png"),
+                                         load_image(peoplePath + "/normal.png"))
 
         selectionImage = load_image(self.resourcePath + "/characters/selector.bmp")
-        heroImages = load_images(self.resourcePath + "/characters/h{}.bmp")
+        heroImages = load_images(self.resourcePath + "/characters/h{}.png")
+        print("heroImages", heroImages)
         self.heroAim = load_image(self.resourcePath + "/target.bmp")
 
         self.congratsImages = load_images(self.resourcePath + "/distractions/c{}.bmp")
@@ -133,14 +134,13 @@ class FeedingGame:
         hasPowerTipImg = load_image(self.resourcePath + "/tips/hasPower.bmp")
         self.allTipShower.add_tip("hasPower", None, (lambda hero: hero.powerUp.type != PowerType.noneType), (lambda hero: Rect((hero.tPowerX, hero.textTop),(1,1))), hasPowerTipImg)
 
+        self.peopleSounds = PersonSounds();
+        self.peopleSounds.eatingSound = pygame.mixer.Sound(self.resourcePath + '/soundfx/chomp.wav')
 
         #setup the first level
         self.increase_level()
 
-        #print("end init")
-
     def pause(self, displayAction):
-        #print("pause")
         self.screen.fill((0, 0, 0))
         displayAction()
         self.gameDisplayer.display_game()
@@ -152,15 +152,15 @@ class FeedingGame:
             time.sleep(.01)
 
     def main_game(self):
-        #print("start main game")
         speedFactor = self.speedFactor
 
         allPowerTypes = (PowerType(None, self.moneyFactor*30, 0, self.powerImages[0], ""),
                          PowerType(None, 0, 20, self.powerImages[1], "FREE FOOD!"))
+       
 
         distractions = Distraction(self.screen, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
         powerUpGroup = PowerUpGroup(self.screen, .04, speedFactor, allPowerTypes)
-        peopleGroup = PeopleGroup(self.screen, self.peopleImages, speedFactor)
+        peopleGroup = PeopleGroup(self.screen, self.peopleSounds, self.peopleImages, speedFactor)
         peopleGroup.reset_people(self.numTotalPeople)
         food = FoodGroup(self.screen, peopleGroup, self.allFoodTypes)
         hero = Hero(self.screen, 10, food, powerUpGroup, speedFactor * 10, self.moneyFactor, self.heroImage, self.heroAim)
@@ -185,7 +185,6 @@ class FeedingGame:
         self.allTipShower.modify_tip("hasPower", [hero])
 
         while(self.gameState.state == self.gameState.GAME_STATE):
-            #print("game loop")
             loopTimer.start()
 
             self.inputHandler.event_handle()
@@ -211,7 +210,6 @@ class FeedingGame:
             if buttonsClicked[2]:
                 self.pause(food.display_food_info)                
 
-            #print("game loop half")
 
             #moves the food
             food.move_all()
@@ -228,9 +226,7 @@ class FeedingGame:
             self.allTipShower.show_tips()
             powerUpGroup.turn_display()
 
-            #print("before game display")
             self.gameDisplayer.display_game()
-            #print("after game display")
             timeMeasure.write_time()
             
             timeMeasure.write_end_loop()
@@ -242,7 +238,6 @@ class FeedingGame:
 
     #determines if the level is passed or the game is over and adds more people
     def turn(self, lifeChangeAmount, peopleGroup):
-        #print("turn")
         if len(peopleGroup.allPeople) < self.maxTotalPeople:
             if random.random() < self.personIncreaceRate:
                 peopleGroup.add_person()
@@ -266,19 +261,16 @@ class FeedingGame:
             self.gameState.state = self.gameState.GAME_OVER_STATE
 
     def refresh_life_display(self):
-        #print("refresh")
         self.tDisplay = self.fDisplay.render('Lives: ' + str(self.gameState.lives), 1, self.fontColor)
         self.lifeDisplayRect = self.tDisplay.get_rect()
         self.lifeDisplayRect.bottom = self.screenSize[1]
         self.lifeDisplayRect.left = self.screenSize[0] / 2
 
     def displayLives(self):
-        #print("display")
         self.screen.blit(self.tDisplay, self.lifeDisplayRect)
 
     #Increases the level by 1 and makes the nesesarry changes to the game
     def increase_level(self):
-        #print("increace level")
         self.gameState.level += 1
         
         #use the input function to set how the people appear
@@ -294,7 +286,6 @@ class FeedingGame:
 
     #calls increase level and displays the level change. Called by the game manager
     def change_level(self):
-        #print("change level")
         self.increase_level()
         
         celibrator = Distraction(self.screen, self.speedFactor * 2, 1, self.distractionImages, self.congratsImages)

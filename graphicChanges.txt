@@ -1,0 +1,10 @@
+Make it so the people can be a different width and height
+Send this to Danila
+
+Make gost blink when about to die
+Take screen shots of game and send
+
+get list of pygame fonts and send
+
+
+

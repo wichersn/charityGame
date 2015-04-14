@@ -27,6 +27,35 @@ class TextDisplay:
         for displayInfo in self.displayInfos:
             self.screen.blit(displayInfo[0], (0,displayInfo[1]))
 
+def resize_img(img, size, setWidth):
+    """ Resises the image to the given width or height and keeps the other dimention to scale.
+        setWidth - bool, if true uses the size for the width, otherwise, uses it for the height"""
+    imgRect = img.get_rect()
+    factor = float(imgRect.height) / float(imgRect.width)
+    if not setWidth:
+        factor = 1/factor 
+
+    if setWidth:
+        width = size
+        height = width * factor
+    else:
+        height = size
+        width = height * factor
+
+    width = int(width + .5)
+    height = int(height + .5)
+
+    return pygame.transform.scale(img, (width, height))
+
+
+def resize_imgs(imgs, size, setWidth):
+    """ Resises all of the images to the given width or height and keeps the other dimention to scale.
+        works in place
+        setWidth - bool, if true uses the size for the width, otherwise, uses it for the height"""
+    for i in range(len(imgs)):
+        imgs[i] = resize_img(imgs[i], size, setWidth)
+
+
 #To help display the regular screen and the score screen
 class GameDisplayer:
     def __init__(self, screen, totalScreen, testingGame = False):
@@ -37,7 +66,7 @@ class GameDisplayer:
     #displays the game screen on the total screen
     def display_game(self):
             self.totalScreen.blit(self.screen, (0, 0))
-            if (not self.testingGame) or sys.flags.debug:
+            if (not self.testingGame):
                 pygame.display.flip()
             else:
                 #print("display", random.random())
@@ -55,7 +84,7 @@ def user_select(header, gameDisplayer, inputHandler, images, selectionImage):
     imageInfos = []
     imageSize = int(screenSize[0]/len(images) * .6)
     for image in images:
-        image = pygame.transform.scale(image, (imageSize, imageSize))
+        image = resize_img(image, imageSize, True)
         
         imageRect = image.get_rect()
         imageRect.topleft = (xPos, screenSize[1]/2)

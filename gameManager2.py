@@ -1,27 +1,34 @@
-import pygame, inspect
+import pygame, inspect, string
 from pygame import Rect, draw, QUIT, MOUSEMOTION, MOUSEBUTTONDOWN
 from gameIo import *
 from chordConversions import *
 from loadImage import *
 from gameState import *
 from display import *
+from ScreenKeyboard import ScreenKeyboard
 
 #each game class has intro, main_game, change_level, game_over fuctions.
 #It has a game_state attribute from the class GameState
 #It has __init__ inputs of screen, inputHandeler, resourcePath
 class GameManager:
-    def __init__(self, allGameInfos, screenSize, scoreScreenRatio, testingGame = False):
+    def __init__(self, allGameInfos, screenSize, scoreScreenRatio, testingGame = False, useHdmi = True):
         #The GPIO pins used on the raspberry pi for input and output
         coinPin = 21
         hdmiOutPin = 16
         hdmiInPin1 = 10
         hdmiInPin2 = 8 
 
+        self.useHdmi = useHdmi
+
 	      #The hdmi ports the devices are on
         piPort = 1
         compPort = 2
         
-        self.gameCoinCost = 4
+        #Skip the price if debug
+        if sys.flags.debug:
+          self.gameCoinCost = 0
+        else:
+          self.gameCoinCost = 4
 
         self.testingGame = testingGame
 
@@ -30,6 +37,7 @@ class GameManager:
 
         pygame.init()
         pygame.joystick.init()
+        pygame.mixer.init()
 
         #setup the screen
         self.screenSize = screenSize
@@ -66,8 +74,14 @@ class GameManager:
 
         self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen, testingGame)
 
+        allLetters = string.ascii_uppercase + " "
+        keyFont = pygame.font.SysFont('Courier New', int(screenWidth / 10))
+        self.screenKeyboard = ScreenKeyboard(allLetters, self.screen, self.inputHandler, keyFont, self.fDisplay, (255, 255, 255), "You got the high score! Please enter your name") 
+        self.screenKeyboard.init()
+
     def pay_select_game(self):
-        self.inputHandler.switch_to_port(self.inputHandler.piPort)
+        if self.useHdmi:
+          self.inputHandler.switch_to_port(self.inputHandler.piPort)
 
         textStart = self.screenSize[1] - self.charHeight*2
         #setup movie intro
@@ -122,12 +136,17 @@ class GameManager:
             time.sleep(.1)
 
         promoVideo.stop()
+        #Turn back on after quit
+        pygame.mixer.init()
 
         images = [load_image(resourcePath + self.gameImagePath) for resourcePath in self.gameResourcesPaths]
-        selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
-        #use user_select to allow the user to select the game
-        selectheader = self.fDisplay.render("Select your game", 1, (255, 0, 0))
-        gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
+        if len(images) > 1:
+            selectionImage = load_image(self.resourcePath + '/selectionImage.bmp')
+            #use user_select to allow the user to select the game
+            selectheader = self.fDisplay.render("Select your game", 1, (255, 0, 0))
+            gameNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, images, selectionImage)
+        else:
+            gameNum = 0
 
         #run the selected game
         self.run_game(gameNum)
@@ -143,13 +162,12 @@ class GameManager:
 
         #state machine
         while(True):        
-            if (not sys.flags.debug):
-                if(self.game.gameState.state == self.game.gameState.INTRO_STATE):
-                    #run the games intro function
-                    self.game.intro()
-                if(self.game.gameState.state == self.game.gameState.GAME_STATE):
-                    #run this classes main_game function.
-                    self.main_game()
+            if(self.game.gameState.state == self.game.gameState.INTRO_STATE):
+                #run the games intro function
+                self.game.intro()
+            if(self.game.gameState.state == self.game.gameState.GAME_STATE):
+                #run this classes main_game function.
+                self.main_game()
 
             if(self.game.gameState.state == self.game.gameState.GAME_OVER_STATE):
                 #runs this classes game_over function.
@@ -175,7 +193,7 @@ class GameManager:
         #make if a game doesn't have high scores, it returns None
         if scoreData[1]:
             if self.scoreSaver.is_high_score(scoreData):
-                scoreData[0] = self.enter_student_num()
+                scoreData[0] = self.screenKeyboard.get_name_from_usr()
                 if scoreData[0] != None:
                     self.scoreSaver.add_score(scoreData)
                 self.update_score_display()
@@ -183,7 +201,8 @@ class GameManager:
         self.game.game_over()
 
         #make sure it's swithced to the correct port after the game
-        self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
+        if self.useHdmi:
+          self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
 
     #update the side score panel with the high scores from the file
     def update_score_display(self):
@@ -294,7 +313,8 @@ class GameManager:
                     return enteredNums
 
                 #make sure it's swithced to the correct port after the game
-                self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
+                if self.useHdmi:
+                  self.inputHandler.check_switch_to_port(self.inputHandler.piPort)
         
                 time.sleep(.01)
 

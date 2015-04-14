@@ -7,3 +7,87 @@ Traceback (most recent call last):
   File "/media/flashDrive/charityGame/gameManager2.py", line 122, in pay_select_game
     time.sleep(.1)
 KeyboardInterrupt
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+Traceback (most recent call last):
+  File "gameTest.py", line 40, in <module>
+    gameManager.pay_select_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 137, in pay_select_game
+    self.run_game(gameNum)
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 156, in run_game
+    self.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 171, in main_game
+    self.game.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/feedingGame/feedingGame3.py", line 164, in main_game
+    distractions = Distraction(self.screen, peopleSounds, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
+NameError: global name 'peopleSounds' is not defined
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+------------game over ----------
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+------------game over ----------
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+Traceback (most recent call last):
+  File "gameTest.py", line 40, in <module>
+    gameManager.pay_select_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 137, in pay_select_game
+    self.run_game(gameNum)
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 156, in run_game
+    self.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 171, in main_game
+    self.game.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/feedingGame/feedingGame3.py", line 164, in main_game
+    distractions = Distraction(self.screen, peopleSounds, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
+NameError: global name 'peopleSounds' is not defined
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+Traceback (most recent call last):
+  File "gameTest.py", line 40, in <module>
+    gameManager.pay_select_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 137, in pay_select_game
+    self.run_game(gameNum)
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 156, in run_game
+    self.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 171, in main_game
+    self.game.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/feedingGame/feedingGame3.py", line 164, in main_game
+    distractions = Distraction(self.screen, peopleSounds, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
+NameError: global name 'peopleSounds' is not defined
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+Traceback (most recent call last):
+  File "gameTest.py", line 40, in <module>
+    gameManager.pay_select_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 137, in pay_select_game
+    self.run_game(gameNum)
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 156, in run_game
+    self.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 171, in main_game
+    self.game.main_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/feedingGame/feedingGame3.py", line 164, in main_game
+    distractions = Distraction(self.screen, peopleSounds, speedFactor, speedFactor * 10, self.distractionImages, self.speechImages)
+NameError: global name 'peopleSounds' is not defined
+start
+INIT!!!!!!!!!!!!
+done init
+starting game
+Traceback (most recent call last):
+  File "gameTest.py", line 40, in <module>
+    gameManager.pay_select_game()
+  File "/home/nevanw/files/chartiyGame/charityGame/gameManager2.py", line 124, in pay_select_game
+    time.sleep(.1)
+KeyboardInterrupt
