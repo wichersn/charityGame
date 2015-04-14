@@ -75,7 +75,7 @@ class GameManager:
         self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen, testingGame)
 
         allLetters = string.ascii_uppercase + " "
-        keyFont = pygame.font.SysFont('Courier New', int(screenWidth / 10))
+        keyFont = pygame.font.SysFont('Courier New', 14)
         self.screenKeyboard = ScreenKeyboard(allLetters, self.screen, self.inputHandler, keyFont, self.fDisplay, (255, 255, 255), "You got the high score! Please enter your name") 
         self.screenKeyboard.init()
 

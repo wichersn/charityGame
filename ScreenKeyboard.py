@@ -28,7 +28,7 @@ class ScreenKeyboard:
         self.setup_display()
 
     def setup_grid(self):
-        numLettersInRow = int(screenWidth / self.letterSize[0])
+        numLettersInRow = int(self.screen.get_width() / self.letterSize[0])
         
         self.letterArray = []
 
@@ -36,7 +36,7 @@ class ScreenKeyboard:
         while letterNum < len(self.allLetters):
             self.letterArray.append([])
             for i in range(numLettersInRow):
-                text = font.render(self.allLetters[letterNum].replace(" ", "_"), True, self.fontColor) 
+                text = self.font.render(self.allLetters[letterNum].replace(" ", "_"), True, self.fontColor) 
                 self.letterArray[-1].append((self.allLetters[letterNum], text))
                 letterNum += 1
                 if letterNum >= len(self.allLetters):
