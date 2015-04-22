@@ -7,20 +7,21 @@ pygame.init()
 # displays a keyboard for the user and allows them to select the letters using the joystick.
 class ScreenKeyboard:
     # initializes the characters for the keyboard
-    def __init__(self, letters, screen, inputHandler, font, displayFont, fontColor, displayString):
+    def __init__(self, letters, screen, inputHandler, font, displayFont, fontColor, displayString, gameDisplayer):
         self.font = font
         self.displayFont = displayFont
         self.fontColor = fontColor
         self.screen = screen
         self.allLetters = letters
         self.inputHandler = inputHandler
+        self.gameDisplayer = gameDisplayer
         self.speedScale = .1
 
         self.displayer = TextDisplay(displayString, self.screen, self.displayFont, 0)
 
         #Assumes using a font where all letters are equal width
         self.letterSize = self.font.size("A")
-        self.displayHeight = self.displayFont.size("A")
+        self.displayHeight = self.displayFont.size("A")[1]
 
     # initializes the elements of the display
     def init(self):
@@ -71,6 +72,7 @@ class ScreenKeyboard:
         pygame.display.flip()
 
     def get_name_from_usr(self):
+        print("keybaord")
         enteredText = ""
 
         loopTimer = LoopTimer(60*10)
@@ -86,7 +88,7 @@ class ScreenKeyboard:
                 self.inputHandler.event_handle()
                 cartJoyPos, buttons = self.inputHandler.get_input()
                 cartJoyPos = [cartJoyPos[1], cartJoyPos[0]]
-                
+
                 # correct the y cord first so the x can be corrected
                 for i in [0, 1]:
                     selectedPos[i] += cartJoyPos[i] * self.speedScale
@@ -116,16 +118,20 @@ class ScreenKeyboard:
                     return enteredText
 
                 self.display(enteredText, selectedPosInt)
+                self.gameDisplayer.display_game()
 
                 time.sleep(.002)
 
             tConfirm = self.displayFont.render("Your student number is", 1, (255, 0, 0))
-            tQuestion = self.displayFont.render("Is this correct? Press A for yes, B for no", 1, (255, 0, 0))
+            tQuestion = self.displayFont.render("Is this correct? Press trigger for yes, 2 for no", 1, (255, 0, 0))
+            tEntered = self.displayFont.render(enteredText, 1, (255,0,0))
 
             self.screen.fill((0, 0, 0))        
             self.screen.blit(tConfirm, (0, 0))
-            self.screen.blit(enteredText, (0, self.displayHeight))
+            self.screen.blit(tEntered, (0, self.displayHeight))
             self.screen.blit(tQuestion, (0, self.displayHeight * 2))
+            
+            self.gameDisplayer.display_game()
 
             loopTimer.start()
 

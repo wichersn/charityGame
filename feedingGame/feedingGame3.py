@@ -88,8 +88,8 @@ class FeedingGame:
         heroImageNum = user_select(selectheader, self.gameDisplayer, self.inputHandler, heroImages, selectionImage)
         self.moneyFactor = 1
         self.heroImage = heroImages[heroImageNum]
-        self.allFoodTypes = (FoodType("Candy", self.foodImages[0], .7, .34, self.moneyFactor*2, .05),
-                        FoodType("Burger", self.foodImages[1], 2, .51, self.moneyFactor*3, .07))
+        self.allFoodTypes = (FoodType("Candy", self.foodImages[0], .7, .34, self.moneyFactor*1, .05),
+                        FoodType("Burger", self.foodImages[1], 2, .51, self.moneyFactor*1.5, .07))
 
         self.allTipShower = AllTipShower(2, self.screen)
         # tip to show when the first person appears on the screen
@@ -154,7 +154,7 @@ class FeedingGame:
     def main_game(self):
         speedFactor = self.speedFactor
 
-        allPowerTypes = (PowerType(None, self.moneyFactor*30, 0, self.powerImages[0], ""),
+        allPowerTypes = (PowerType(None, self.moneyFactor*10, 0, self.powerImages[0], ""),
                          PowerType(None, 0, 20, self.powerImages[1], "FREE FOOD!"))
        
 
@@ -311,32 +311,38 @@ class FeedingGame:
 
     
     def start_increase_max_game_calc(self, levelNum):
-        startPeople = int(levelNum / 3) + 1
-        peopleIncrease = levelNum * 5
-        maxPeople = levelNum + 4
+        levelNum = levelNum -1 
+        startPeople = int(.918 * math.exp(.65 * levelNum) + .5)
+        peopleIncrease = int(3 * math.exp(.7*levelNum) + .5)
+        maxPeople = int(2.86* math.exp(.8 * levelNum) + .5)
+
+        print(startPeople, peopleIncrease, maxPeople)
 
         return startPeople, peopleIncrease, maxPeople
-        #return 30, 0, 31
 
     def levelover_lives_money_calc(self, levelNum, startIncreaceMax):
         startPeople, peopleIncrease, maxPeople = startIncreaceMax
 
         if levelNum <= 1:
-            lives = 20
+            lives = 4
         else:
-            lives = 5
+            lives = 1 + levelNum
         
         if levelNum <= 1:
             money = 40
         else:
-            money = 0
+            money = 15
             
-        levelOver = int(maxPeople * .75)
+        levelOver = int(maxPeople * .6)
+
+        if sys.flags.debug:
+            lives = 1
+
         return levelOver, lives, money
 
     #gives the score to be used in saving the high scores
     def  get_score(self):
-        return self.gameState.level
+        return self.gameState.level * 200 + self.gameState.money
     
 
     def game_over(self):

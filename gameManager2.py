@@ -75,8 +75,8 @@ class GameManager:
         self.gameDisplayer = GameDisplayer(self.screen, self.totalScreen, testingGame)
 
         allLetters = string.ascii_uppercase + " "
-        keyFont = pygame.font.SysFont('Courier New', 14)
-        self.screenKeyboard = ScreenKeyboard(allLetters, self.screen, self.inputHandler, keyFont, self.fDisplay, (255, 255, 255), "You got the high score! Please enter your name") 
+        keyFont = pygame.font.SysFont('Courier New', 100)
+        self.screenKeyboard = ScreenKeyboard(allLetters, self.screen, self.inputHandler, keyFont, self.fDisplay, (255, 255, 255), "You got the high score! Please enter your name", self.gameDisplayer)
         self.screenKeyboard.init()
 
     def pay_select_game(self):
@@ -189,11 +189,15 @@ class GameManager:
                 self.game.change_level()
 
     def game_over(self):
+        print("game over")
         scoreData = ["", self.game.get_score()]
+        print("got score")
         #make if a game doesn't have high scores, it returns None
         if scoreData[1]:
             if self.scoreSaver.is_high_score(scoreData):
+                print("is high score")
                 scoreData[0] = self.screenKeyboard.get_name_from_usr()
+                print('keyboard')
                 if scoreData[0] != None:
                     self.scoreSaver.add_score(scoreData)
                 self.update_score_display()
