@@ -191,7 +191,7 @@ class InputHandler:
 
         #Values for shutdown combination
         #Give the operator a way to shutdown the raspberry pi correctly with the joystick
-        self.btnCombo = [(True,9),(False,9),(True,5),(False,5),(True,7),(True,10),(False,10),(False,7)]
+        self.btnCombo = [(True,5),(False,5),(True,10),(False,10),(True,7),(False,7),(True,9),(False,9)]
         self.btnComboI = 0
 
     def event_handle(self):
@@ -212,7 +212,8 @@ class InputHandler:
                   if sys.flags.debug:
                     close()
                   else:
-                    os.system("shutdown now -h")
+                    print("shutdown")
+                    os.system("shutdown -h now")
 
     #Returns the joystick position and the buttons pressed
     #uses the mouse to act as the joystick if the joystick isn't there
