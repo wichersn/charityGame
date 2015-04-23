@@ -38,11 +38,11 @@ class FeedingGame:
         self.gameState.lives = 0
 
         #load the images
-        self.powerImages = (load_image(self.resourcePath + '/money.bmp'),
+        self.powerImages = (load_image(self.resourcePath + '/money.png'),
                             load_image(self.resourcePath + '/free.bmp'))
 
         self.foodImages = (load_image(self.resourcePath+'/candy.png'),
-                           load_image(self.resourcePath+'/burger.bmp'))
+                           load_image(self.resourcePath+'/Food_Fish.png'))
 
         peoplePath = self.resourcePath  + '/people'
         peopleImages = load_images(peoplePath + '/p{}.png')
@@ -53,7 +53,7 @@ class FeedingGame:
         selectionImage = load_image(self.resourcePath + "/characters/selector.bmp")
         heroImages = load_images(self.resourcePath + "/characters/h{}.png")
         print("heroImages", heroImages)
-        self.heroAim = load_image(self.resourcePath + "/target.bmp")
+        self.heroAim = load_image(self.resourcePath + "/target.png")
 
         self.congratsImages = load_images(self.resourcePath + "/distractions/c{}.bmp")
         self.distractionImages = load_images(self.resourcePath + "/distractions/d{}.bmp")
@@ -64,10 +64,13 @@ class FeedingGame:
         self.loopTime = .05
 
         #display the instructions file
-        instructFile = open(self.resourcePath + "/instructions.txt", 'r')
-        displayer = TextDisplay(instructFile.read(), self.screen, self.fDisplay, 0)
+        #instructFile = open(self.resourcePath + "/instructions.txt", 'r')
+        #displayer = TextDisplay(instructFile.read(), self.screen, self.fDisplay, 0)
+        instructImage = load_image(self.resourcePath + "/instructions.png")
+        instructImage = resize_img(instructImage, self.screen.get_rect().height, False)
         self.screen.fill((0, 0, 0))
-        displayer.draw()
+        #displayer.draw()
+        self.screen.blit(instructImage, (0,0))
 
         self.gameDisplayer.display_game()
 

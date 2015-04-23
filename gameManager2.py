@@ -20,6 +20,8 @@ class GameManager:
 
         self.useHdmi = useHdmi
 
+        self.usePromo = False
+
 	      #The hdmi ports the devices are on
         piPort = 1
         compPort = 2
@@ -28,7 +30,7 @@ class GameManager:
         if sys.flags.debug:
           self.gameCoinCost = 0
         else:
-          self.gameCoinCost = 4
+          self.gameCoinCost = 10
 
         self.testingGame = testingGame
 
@@ -49,7 +51,8 @@ class GameManager:
         if testingGame and (not sys.flags.debug):
             self.totalScreen = pygame.Surface((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))
         else:
-            self.totalScreen = pygame.display.set_mode((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))# pygame.FULLSCREEN)
+            #self.totalScreen = pygame.display.set_mode((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]))# pygame.FULLSCREEN)
+            self.totalScreen = pygame.display.set_mode((self.screenSize[0] + self.scoreScreenSize[0], self.screenSize[1]), pygame.FULLSCREEN)
 
         #set path
         #self.resourcePath = os.path.dirname(os.path.abspath(sys.executable)) + "/resources"
@@ -80,25 +83,32 @@ class GameManager:
         self.screenKeyboard.init()
 
     def pay_select_game(self):
+        self.screen.fill((0, 0, 0))
         if self.useHdmi:
           self.inputHandler.switch_to_port(self.inputHandler.piPort)
 
         textStart = self.screenSize[1] - self.charHeight*2
         #setup movie intro
-        pygame.mixer.quit()
-        promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg')
-
         promoRect = self.screen.get_rect()
         promoRect.height = textStart
-        promoVideo.set_display(self.totalScreen, promoRect)
+        if self.usePromo:
+            pygame.mixer.quit()
+            promoVideo = pygame.movie.Movie(self.resourcePath + '/promoVideo.mpg')
+
+            promoVideo.set_display(self.totalScreen, promoRect)
+        else:
+            promoImg = load_image(self.resourcePath + '/promoScreen.png')
+            promoImg = resize_img(promoImg, promoRect.height, False)
+            self.screen.blit(promoImg, promoRect)
+            print("blit")
 
         coinToCents = 5
 
         #display insert coin
-        self.screen.fill((0, 0, 0))
         tDisplay = self.fDisplay.render("Price: {}cents".format(self.gameCoinCost*coinToCents), 1, (0, 255, 0))
         self.screen.blit(tDisplay, (0, textStart))
         self.gameDisplayer.display_game()
+        print("display")
 
         coinsLeftRect = Rect(0, textStart - self.charHeight, self.screenSize[1], self.charHeight)    
         
@@ -118,7 +128,8 @@ class GameManager:
             accepted = self.inputHandler.coinCount >= self.gameCoinCost
 
             if preCoinCount < self.inputHandler.coinCount:
-                promoVideo.stop()
+                if self.usePromo:
+                    promoVideo.stop()
 
                 tCoinsLeft = self.fDisplay.render("Please insert {} more cents.".format((self.gameCoinCost - self.inputHandler.coinCount)*coinToCents), 1, (0, 255, 0))
                 
@@ -130,14 +141,16 @@ class GameManager:
 
             self.inputHandler.event_handle()
             #replay the video
-            if not promoVideo.get_busy():
-                promoVideo.rewind()
-                promoVideo.play()
+            if self.usePromo:
+                if not promoVideo.get_busy():
+                    promoVideo.rewind()
+                    promoVideo.play()
             time.sleep(.1)
 
-        promoVideo.stop()
-        #Turn back on after quit
-        pygame.mixer.init()
+        if self.usePromo:
+            promoVideo.stop()
+            #Turn back on after quit
+            pygame.mixer.init()
 
         images = [load_image(resourcePath + self.gameImagePath) for resourcePath in self.gameResourcesPaths]
         if len(images) > 1:
