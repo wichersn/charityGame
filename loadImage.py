@@ -3,7 +3,9 @@ import pygame
 
 def load_image(imagePath):
     image = pygame.image.load(imagePath)
-    image.set_colorkey((255,255,255,255))
+    # Only set the colorkey if it's a bmp
+    if imagePath[-3:-1] == "bm":
+        image.set_colorkey((255,255,255,255))
 
     return image
 

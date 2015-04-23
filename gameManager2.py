@@ -30,7 +30,7 @@ class GameManager:
         if sys.flags.debug:
           self.gameCoinCost = 0
         else:
-          self.gameCoinCost = 10
+          self.gameCoinCost = 5
 
         self.testingGame = testingGame
 
